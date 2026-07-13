@@ -1,0 +1,132 @@
+{% extends "partials/app_base.html" %}
+{% block title %}{{ scan.project_name }} — Report — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <a href="{% url 'reports:history' %}" class="text-muted" style="font-size:13.5px;">← Back to history</a>
+    <h1 style="font-size: 26px; margin-top:8px;">{{ scan.project_name }}</h1>
+    <p class="text-secondary mt-8">
+      {{ scan.get_source_type_display }} · {{ scan.language|default:"Unknown language" }} · Scanned {{ scan.created_at|date:"M d, Y H:i" }}
+    </p>
+  </div>
+  <div class="flex gap-8">
+    <a href="{% url 'reports:export_pdf' scan.id %}" class="btn btn-secondary btn-sm">⬇ Export PDF</a>
+    <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary btn-sm">+ New Scan</a>
+  </div>
+</div>
+
+<div class="grid-2 mb-24">
+  <div class="glass-card padded" style="text-align:center;">
+    <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Security Score</h3>
+    <div class="score-ring-wrap mt-16" style="background: conic-gradient(
+        {% if scan.score_color == 'success' %}var(--success){% elif scan.score_color == 'info' %}var(--accent-cyan){% elif scan.score_color == 'warning' %}var(--medium){% else %}var(--danger){% endif %} {{ scan.security_score }}%,
+        var(--bg-glass) {{ scan.security_score }}%
+      ); border-radius:50%;">
+      <div class="score-ring-value" style="background:var(--bg-primary); border-radius:50%; inset:10px;">
+        <span class="num">{{ scan.security_score }}</span>
+        <span class="grade">Grade {{ scan.score_grade }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card padded">
+    <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:20px;">Issues by Severity</h3>
+    <div class="flex-col gap-12">
+      <div class="flex-between"><span class="badge badge-critical">Critical</span><span style="font-weight:700;">{{ scan.critical_count }}</span></div>
+      <div class="flex-between"><span class="badge badge-high">High</span><span style="font-weight:700;">{{ scan.high_count }}</span></div>
+      <div class="flex-between"><span class="badge badge-medium">Medium</span><span style="font-weight:700;">{{ scan.medium_count }}</span></div>
+      <div class="flex-between"><span class="badge badge-low">Low</span><span style="font-weight:700;">{{ scan.low_count }}</span></div>
+      <div class="flex-between"><span class="badge badge-info">Info</span><span style="font-weight:700;">{{ scan.info_count }}</span></div>
+      <hr class="divider" style="margin:8px 0;">
+      <div class="flex-between"><span class="text-secondary" style="font-size:14px;">Total issues</span><span style="font-weight:700;">{{ scan.total_issues }}</span></div>
+    </div>
+  </div>
+</div>
+
+{% if files|length > 1 %}
+<div class="glass-card padded mb-24">
+  <h3 style="font-size:15px; margin-bottom:12px;">Files scanned ({{ files|length }})</h3>
+  <div class="flex gap-8" style="flex-wrap:wrap;">
+    {% for f in files %}
+      <span class="tag-pill mono">{{ f.filename }} · {{ f.lines_of_code }} loc</span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<h2 style="font-size:20px; margin-bottom:16px;">Detected issues</h2>
+
+{% if issues %}
+<div class="flex-col gap-16">
+  {% for issue in issues %}
+  <div class="glass-card padded" data-accordion>
+    <div class="flex-between" data-accordion-toggle style="cursor:pointer;">
+      <div class="flex gap-12" style="align-items:center;">
+        <span class="badge badge-{{ issue.severity }}">{{ issue.get_severity_display }}</span>
+        <div>
+          <div style="font-weight:600; font-size:15px;">{{ issue.title }}</div>
+          <div class="text-muted" style="font-size:12.5px; margin-top:2px;">
+            {{ issue.category }}{% if issue.file %} · {{ issue.file.filename }}{% endif %}{% if issue.line_number %} · line {{ issue.line_number }}{% endif %}
+          </div>
+        </div>
+      </div>
+      <span class="text-muted">▼</span>
+    </div>
+
+    <div data-accordion-panel style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+      <hr class="divider">
+      {% if issue.code_snippet %}
+      <div class="mb-16">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Code</div>
+        <pre class="mono glass-card padded" style="font-size:13px; overflow-x:auto;">{{ issue.code_snippet }}</pre>
+      </div>
+      {% endif %}
+
+      <div class="mb-16">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Description</div>
+        <p style="font-size:14.5px; line-height:1.6;">{{ issue.description }}</p>
+      </div>
+
+      <div class="mb-16">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Why this is dangerous</div>
+        <p style="font-size:14.5px; line-height:1.6; color:var(--text-secondary);">{{ issue.why_dangerous }}</p>
+      </div>
+
+      <div class="mb-16">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Recommended fix</div>
+        <p style="font-size:14.5px; line-height:1.6;">{{ issue.recommended_fix }}</p>
+      </div>
+
+      {% if issue.secure_code_example %}
+      <div>
+        <div class="flex-between mb-8">
+          <span class="text-muted" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Secure code example</span>
+          <button type="button" class="btn btn-ghost btn-sm" data-copy="#example-{{ forloop.counter }}">Copy</button>
+        </div>
+        <pre id="example-{{ forloop.counter }}" class="mono glass-card padded" style="font-size:13px; overflow-x:auto; border-color:var(--success);">{{ issue.secure_code_example }}</pre>
+      </div>
+      {% endif %}
+
+      {% if issue.owasp_reference or issue.cwe_reference %}
+        <div class="mt-16 flex gap-8" style="flex-wrap:wrap;">
+          {% if issue.owasp_reference %}<span class="tag-pill">{{ issue.owasp_reference }}</span>{% endif %}
+          {% if issue.cwe_reference %}
+            {% if request.user.is_on_free_plan %}
+              <a href="{% url 'subscriptions:pricing' %}" class="tag-pill" style="text-decoration:none; opacity:0.7;" title="Upgrade to Pro to see CWE mapping">🔒 CWE mapping (Pro)</a>
+            {% else %}
+              <span class="tag-pill">{{ issue.cwe_reference }}</span>
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="glass-card empty-state">
+  <div class="empty-icon">✅</div>
+  <p>No issues found! This code looks clean.</p>
+</div>
+{% endif %}
+{% endblock %}

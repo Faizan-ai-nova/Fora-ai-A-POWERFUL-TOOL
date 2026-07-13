@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Create your account — Fora AI{% endblock %}
+{% block content %}
+{% include "partials/public_nav.html" %}
+<div class="container-narrow" style="padding: 60px 20px;">
+  <div class="glass-card padded" style="max-width: 440px; margin: 0 auto;">
+    <h1 style="font-size: 26px; text-align:center;">Create your account</h1>
+    <p class="text-secondary mt-8" style="text-align:center; font-size: 14px;">Get 6 free AI security scans instantly.</p>
+
+    <form method="post" class="mt-24">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}<div class="form-error">{{ form.username.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors.0 }}</div>{% endif %}
+        <div class="form-help">At least 8 characters. Avoid common passwords.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm password</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Create account</button>
+    </form>
+
+    <p class="text-secondary mt-24" style="text-align:center; font-size: 14px;">
+      Already have an account? <a href="{% url 'accounts:login' %}" class="text-gradient" style="font-weight:600;">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

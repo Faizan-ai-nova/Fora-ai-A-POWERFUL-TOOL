@@ -1,0 +1,54 @@
+{% load static %}
+<div class="mobile-topbar">
+  <a href="{% url 'dashboard:home' %}" class="navbar-brand">
+    <span class="sidebar-logo-mark">🛡️</span> Fora<span class="text-gradient">AI</span>
+  </a>
+  <button data-sidebar-toggle class="btn btn-ghost btn-sm" aria-label="Toggle menu">☰</button>
+</div>
+<div class="sidebar-overlay"></div>
+
+<aside class="sidebar">
+  <a href="{% url 'dashboard:home' %}" class="sidebar-brand">
+    <span class="sidebar-logo-mark">🛡️</span>
+    Fora<span class="text-gradient">AI</span>
+  </a>
+
+  <a href="{% url 'dashboard:home' %}" class="sidebar-link {% if request.resolver_match.url_name == 'home' and request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+    <span>📊</span> Dashboard
+  </a>
+  <a href="{% url 'scanner:new_scan' %}" class="sidebar-link {% if request.resolver_match.app_name == 'scanner' %}active{% endif %}">
+    <span>🔍</span> New Scan
+  </a>
+  <a href="{% url 'reports:history' %}" class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
+    <span>📄</span> Scan History
+  </a>
+  <a href="{% url 'subscriptions:pricing' %}" class="sidebar-link {% if request.resolver_match.app_name == 'subscriptions' %}active{% endif %}">
+    <span>💳</span> Subscription
+  </a>
+
+  <div class="sidebar-section-label">Account</div>
+  <a href="{% url 'accounts:profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+    <span>👤</span> Profile
+  </a>
+  {% if request.user.is_staff %}
+  <a href="/admin/" class="sidebar-link"><span>⚙️</span> Admin Panel</a>
+  {% endif %}
+  <a href="{% url 'accounts:logout' %}" class="sidebar-link"><span>🚪</span> Log out</a>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-quota">
+      <div class="flex-between mb-8">
+        <span class="text-muted" style="font-size:12.5px;">Plan</span>
+        <span class="tag-pill">{{ current_plan.name|default:"Free" }}</span>
+      </div>
+      {% if current_plan.is_unlimited %}
+        <div style="font-size:13px;" class="text-secondary">Unlimited scans ✨</div>
+      {% else %}
+        <div style="font-size:13px;" class="text-secondary">{{ scans_remaining }} scan{{ scans_remaining|pluralize }} left</div>
+        {% if scans_remaining == 0 %}
+          <a href="{% url 'subscriptions:upgrade' %}" class="btn btn-primary btn-sm btn-block mt-8">Upgrade</a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</aside>

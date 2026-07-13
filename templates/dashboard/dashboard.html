@@ -1,0 +1,81 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Dashboard — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 26px;">Welcome back, {{ request.user.username }} 👋</h1>
+    <p class="text-secondary mt-8">Here's the security posture of everything you've scanned.</p>
+  </div>
+  <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary">+ New Scan</a>
+</div>
+
+<div class="stat-grid mb-24">
+  <div class="glass-card stat-card">
+    <div class="stat-icon">🔍</div>
+    <div class="stat-label">Scans Remaining</div>
+    <div class="stat-value">
+      {% if active_subscription.plan.is_unlimited %}∞{% else %}{{ scans_remaining }}{% endif %}
+    </div>
+  </div>
+  <div class="glass-card stat-card">
+    <div class="stat-icon">📊</div>
+    <div class="stat-label">Total Scans</div>
+    <div class="stat-value">{{ total_scans }}</div>
+  </div>
+  <div class="glass-card stat-card">
+    <div class="stat-icon">🛡️</div>
+    <div class="stat-label">Avg Security Score</div>
+    <div class="stat-value">{{ avg_score }}</div>
+  </div>
+  <div class="glass-card stat-card">
+    <div class="stat-icon">🚨</div>
+    <div class="stat-label">Critical + High Issues</div>
+    <div class="stat-value" style="color: var(--danger);">{{ total_critical|add:total_high }}</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="glass-card padded">
+    <div class="flex-between mb-16">
+      <h3 style="font-size:16px;">Recent scans</h3>
+      <a href="{% url 'reports:history' %}" class="text-secondary" style="font-size:13.5px;">View all →</a>
+    </div>
+    {% if recent_scans %}
+      {% for scan in recent_scans %}
+        <a href="{% url 'reports:detail' scan.id %}" class="flex-between" style="padding: 12px 0; border-bottom: 1px solid var(--border-glass); display:flex;">
+          <div>
+            <div style="font-weight:600; font-size:14.5px;">{{ scan.project_name }}</div>
+            <div class="text-muted" style="font-size:12.5px; margin-top:4px;">{{ scan.get_source_type_display }} · {{ scan.created_at|timesince }} ago</div>
+          </div>
+          <span class="badge badge-{{ scan.score_color }}">{{ scan.security_score }}/100</span>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🗂️</div>
+        <p>No scans yet. Run your first scan to see results here.</p>
+        <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary mt-16">Start a scan</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="glass-card padded">
+    <h3 style="font-size:16px; margin-bottom:16px;">Subscription</h3>
+    <div class="flex-between mb-16">
+      <span class="text-secondary" style="font-size:14px;">Current plan</span>
+      <span class="tag-pill">{{ active_subscription.plan.name|default:"Free" }}</span>
+    </div>
+    <div class="flex-between mb-16">
+      <span class="text-secondary" style="font-size:14px;">Status</span>
+      <span class="badge badge-success">{{ active_subscription.get_status_display|default:"Active" }}</span>
+    </div>
+    <hr class="divider">
+    {% if active_subscription.plan.is_unlimited %}
+      <p class="text-secondary" style="font-size:14px;">You have unlimited scans. Thanks for being a Fora AI customer! 🎉</p>
+    {% else %}
+      <p class="text-secondary" style="font-size:14px;">You're on the free plan with {{ scans_remaining }} scan{{ scans_remaining|pluralize }} left.</p>
+      <a href="{% url 'subscriptions:pricing' %}" class="btn btn-primary btn-block mt-16">Upgrade for unlimited scans</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Fora AI — AI-Powered Security Scanner{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Find security vulnerabilities in your code before attackers do. AI-powered static analysis for Python, Django, JavaScript, HTML and CSS.{% endblock %}">
+  {% block canonical %}<link rel="canonical" href="{{ request.build_absolute_uri }}">{% endblock %}
+
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{{ site_name|default:'Fora AI' }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Find security vulnerabilities in your code before attackers do.{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta name="twitter:card" content="summary_large_image">
+  {% block extra_head %}{% endblock %}
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}" data-theme="{% if request.user.is_authenticated and not request.user.dark_mode %}light{% else %}dark{% endif %}">
+
+  <div id="toast-container"></div>
+  {% for message in messages %}
+    <div data-django-message data-message="{{ message }}" data-tag="{{ message.tags }}" style="display:none;"></div>
+  {% endfor %}
+
+  {% block content %}{% endblock %}
+
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="scan-loader"></div>
+    <div class="text-muted">Scanning your code for vulnerabilities…</div>
+  </div>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

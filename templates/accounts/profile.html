@@ -1,0 +1,74 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Profile — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24">
+  <div>
+    <h1 style="font-size: 26px;">Profile</h1>
+    <p class="text-secondary mt-8">Manage your account details and preferences.</p>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="glass-card padded">
+    <h3 style="font-size:16px; margin-bottom:20px;">Personal information</h3>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">First name</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last name</label>
+          {{ form.last_name }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        {{ form.email }}
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          {{ form.company }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Job title</label>
+          {{ form.job_title }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">GitHub username</label>
+        {{ form.github_username }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bio</label>
+        {{ form.bio }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Avatar</label>
+        {{ form.avatar }}
+      </div>
+      <label class="checkbox-row mb-16">
+        {{ form.email_notifications }} Email me when a scan completes
+      </label>
+      <button type="submit" class="btn btn-primary">Save changes</button>
+    </form>
+  </div>
+
+  <div class="flex-col gap-16">
+    <div class="glass-card padded">
+      <h3 style="font-size:16px; margin-bottom:16px;">Account summary</h3>
+      <div class="flex-between mb-8"><span class="text-muted" style="font-size:13.5px;">Username</span><span>{{ request.user.username }}</span></div>
+      <div class="flex-between mb-8"><span class="text-muted" style="font-size:13.5px;">Plan</span><span class="tag-pill">{{ current_plan.name|default:"Free" }}</span></div>
+      <div class="flex-between mb-8"><span class="text-muted" style="font-size:13.5px;">Scans remaining</span><span>{{ scans_remaining }}</span></div>
+      <div class="flex-between"><span class="text-muted" style="font-size:13.5px;">Member since</span><span>{{ request.user.created_at|date:"M Y" }}</span></div>
+    </div>
+    <div class="glass-card padded">
+      <h3 style="font-size:16px; margin-bottom:12px;">Need more scans?</h3>
+      <p class="text-secondary mt-8" style="font-size:14px;">Upgrade to Basic for unlimited AI security scans.</p>
+      <a href="{% url 'subscriptions:pricing' %}" class="btn btn-secondary btn-block mt-16">View plans</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

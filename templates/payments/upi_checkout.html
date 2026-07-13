@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}UPI Checkout — Fora AI{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --bg: var(--bg-primary);
+    --bg-1: var(--bg-elevated);
+    --bg-2: var(--bg-secondary);
+    --bg-3: var(--bg-glass-hover);
+    --border: var(--border-glass);
+    --border-2: var(--border-glass);
+    --border-3: var(--border-glass-strong);
+    --text: var(--text-primary);
+    --text-2: var(--text-secondary);
+    --text-3: var(--text-muted);
+    --accent: var(--accent-indigo);
+    --radius: var(--radius-sm);
+    --font: var(--font-body);
+    --transition: 0.15s ease;
+  }
+  .checkout-page {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 16px;
+    background: var(--bg);
+  }
+  .checkout-box {
+    width: 100%; max-width: 420px;
+    background: var(--bg-1); border: 1px solid var(--border-2);
+    border-radius: var(--radius-lg); padding: 36px;
+  }
+  .checkout-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+  .checkout-bug {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .checkout-logo span { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+
+  .plan-summary {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+  }
+  .plan-summary .plan-name { font-size: 13px; color: var(--text-2); margin-bottom: 4px; }
+  .plan-summary .plan-price { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; }
+  .plan-summary .plan-price span { font-size: 15px; color: var(--text-3); font-weight: 400; }
+
+  .qr-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    background: #fff; border-radius: var(--radius); padding: 18px; margin-bottom: 18px;
+  }
+  .qr-wrap img { width: 220px; height: 220px; }
+  .qr-hint { font-size: 12px; color: #555; margin-top: 8px; text-align: center; }
+
+  .upi-id-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 12px 14px; margin-bottom: 20px; font-size: 13.5px;
+  }
+  .upi-id-row code { color: var(--accent); font-weight: 600; }
+  .copy-btn {
+    border: 1px solid var(--border-2); background: var(--bg-3); color: var(--text-2);
+    border-radius: 6px; padding: 5px 10px; font-size: 12px; cursor: pointer; font-family: var(--font);
+  }
+  .copy-btn:hover { color: var(--text); }
+
+  .field-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); margin-bottom: 8px; }
+  .utr-input {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius);
+    border: 1px solid var(--border-2); background: var(--bg-2); color: var(--text);
+    font-family: var(--font); font-size: 14px; margin-bottom: 16px;
+  }
+  .utr-input:focus { outline: none; border-color: var(--accent); }
+
+  .pay-btn {
+    width: 100%; padding: 13px; border-radius: var(--radius);
+    background: var(--accent); color: #fff; font-size: 15px; font-weight: 600;
+    border: none; cursor: pointer; transition: opacity var(--transition);
+    font-family: var(--font);
+  }
+  .pay-btn:hover { opacity: 0.88; }
+
+  .secure-note { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 14px; font-size: 12px; color: var(--text-3); text-align: center; }
+  .back-link { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-3); }
+  .back-link:hover { color: var(--text-2); }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="checkout-page">
+  <div class="checkout-box">
+    <div class="checkout-logo">
+      <span class="checkout-bug">🐛</span>
+      <span>Fora<span style="color:var(--accent);">AI</span></span>
+    </div>
+
+    <div class="plan-summary">
+      <div class="plan-name">{{ plan.name }}</div>
+      <div class="plan-price">
+        ₹{{ plan.display_price_inr }}<span>/{% if plan.billing_period == 'yearly' %}year{% else %}month{% endif %}</span>
+      </div>
+    </div>
+
+    <div class="qr-wrap">
+      <img src="{{ upi_data.qr_url }}" alt="UPI QR Code">
+      <div class="qr-hint">Scan with GPay, PhonePe, Paytm, or any UPI app</div>
+    </div>
+
+    <div class="upi-id-row">
+      <span>UPI ID: <code>{{ upi_data.upi_id }}</code></span>
+      <button type="button" class="copy-btn" onclick="copyUpi()">Copy</button>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="field-label">UTR / Transaction Ref (optional, helps us verify faster)</div>
+      <input type="text" name="utr" class="utr-input" placeholder="e.g. 123456789012" maxlength="50">
+      <button type="submit" class="pay-btn">I've Paid ₹{{ upi_data.amount }} →</button>
+    </form>
+
+    <div class="secure-note">✅ Pay via any UPI app, then tap "I've Paid" — we verify manually and activate within ~30 minutes.</div>
+    <a href="{% url 'subscriptions:pricing' %}" class="back-link">← Back to pricing</a>
+  </div>
+</div>
+
+<script>
+  function copyUpi() {
+    navigator.clipboard.writeText("{{ upi_data.upi_id }}");
+    const btn = document.querySelector('.copy-btn');
+    const old = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = old; }, 1500);
+  }
+</script>
+{% endblock %}

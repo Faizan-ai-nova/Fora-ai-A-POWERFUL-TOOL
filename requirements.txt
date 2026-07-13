@@ -1,0 +1,19 @@
+Django==5.1.4
+python-dotenv==1.0.1
+dj-database-url==2.3.0
+psycopg2-binary==2.9.10
+whitenoise==6.8.2
+gunicorn==23.0.0
+Pillow==11.0.0
+reportlab==4.2.5
+
+# Optional AI providers - uncomment / install the ones you plan to use.
+# The app runs fine without any of these (falls back to the rule engine).
+# openai==1.57.0
+# google-generativeai==0.8.3
+# anthropic==0.40.0
+# groq==0.13.0
+
+# Payment providers
+razorpay==1.4.2
+requests==2.32.3

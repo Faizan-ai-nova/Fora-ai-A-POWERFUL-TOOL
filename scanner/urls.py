@@ -1,0 +1,11 @@
+from django.urls import path
+from . import views
+
+app_name = 'scanner'
+
+urlpatterns = [
+    path('new/', views.new_scan_view, name='new_scan'),
+    path('scan/paste/', views.scan_paste_view, name='scan_paste'),
+    path('scan/file/', views.scan_file_view, name='scan_file'),
+    path('scan/zip/', views.scan_zip_view, name='scan_zip'),
+]

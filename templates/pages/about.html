@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}About — Fora AI{% endblock %}
+{% block meta_description %}Fora AI is a small, focused team building a security scanner developers actually want to run — no dashboards for their own sake, no compliance theater. Here's why we're building it and how it works.{% endblock %}
+{% block body_class %}editorial{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="editorial-shell">
+  <header class="editorial-hero">
+    <span class="editorial-kicker">About</span>
+    <h1>We got tired of security scanners nobody wanted to run.</h1>
+    <p class="editorial-dek">
+      Fora AI started from a simple complaint: most static analysis tools are built for
+      security teams, not for the developer who just wants to know if the code they wrote
+      this afternoon is safe to ship.
+    </p>
+  </header>
+
+  <div class="editorial-prose">
+    <p>
+      Most vulnerability scanners are designed around compliance reporting — long PDFs,
+      dashboards full of severity charts, findings written in language that assumes you
+      already know what a CWE identifier is. They're useful if your job is security. They're
+      mostly noise if your job is building the product.
+    </p>
+    <p>
+      We wanted something different: paste a function, upload a file, or drop in a whole
+      project, and get back exactly two things — what's wrong, and what to change. No
+      onboarding call. No seat-based pricing before you've seen a single result. No jargon
+      you have to look up before the report makes sense.
+    </p>
+
+    <h2>What we actually built</h2>
+    <p>
+      The core of Fora AI is a rule engine that runs entirely on your code, with no
+      external API call required, checking for the vulnerability patterns that show up
+      most often in real Django, Python, and JavaScript codebases — SQL injection, hardcoded
+      secrets, CSRF gaps, insecure deserialization, and the rest of the OWASP Top 10. It
+      works the moment you sign up, with zero configuration.
+    </p>
+    <p>
+      On top of that, the scanner can optionally call a large language model — OpenAI,
+      Gemini, Claude, or Groq, whichever you configure — to catch the kind of issue that
+      pattern-matching alone can't: a checkout endpoint that trusts a client-supplied price,
+      an authorization check that's missing rather than broken, a business-logic flaw that
+      only makes sense in the context of what the code is trying to do.
+    </p>
+
+    <h2>Why we show the fix, not just the finding</h2>
+    <p>
+      A report that says "SQL injection detected" and stops there isn't much more useful
+      than not scanning at all — you still have to go figure out the fix yourself. Every
+      issue we surface comes with a plain-language explanation of why it's dangerous and a
+      working, secure code example for the language you're writing in, because the point
+      isn't to generate a list of problems. It's to get the code fixed.
+    </p>
+
+    <h2>Who's behind this</h2>
+    <p>
+      Fora AI is built by a small team of engineers who've spent time on both sides of
+      this problem — writing code that shipped vulnerabilities, and later cleaning them up
+      in production. We're not a security vendor trying to sell you a platform. We're
+      developers who wanted a better tool, and figured other developers probably wanted the
+      same thing.
+    </p>
+
+    <h2>Try it</h2>
+    <p>
+      Every account starts with six free scans, no card required. Paste something you're
+      working on right now and see what comes back.
+    </p>
+    <p><a href="{% url 'accounts:register' %}">Create a free account →</a></p>
+  </div>
+</div>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

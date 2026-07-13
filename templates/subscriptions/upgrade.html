@@ -1,0 +1,89 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Upgrade — Fora AI{% endblock %}
+{% block app_content %}
+<style>
+  :root {
+    --bg-1: var(--bg-elevated); --bg-2: var(--bg-secondary);
+    --border: var(--border-glass); --border-2: var(--border-glass); --border-3: var(--border-glass-strong);
+    --text: var(--text-primary); --text-2: var(--text-secondary); --text-3: var(--text-muted);
+    --accent: var(--accent-indigo); --green: var(--success);
+    --radius: var(--radius-sm); --font: var(--font-body);
+  }
+  .upgrade-wrap { max-width:760px; margin:0 auto; text-align:center; padding:40px 0 60px; }
+  .upgrade-icon { font-size:40px; margin-bottom:16px; }
+  .upgrade-wrap h1 { font-size:26px; font-weight:700; letter-spacing:-0.025em; margin-bottom:10px; }
+  .upgrade-wrap > p { font-size:15px; color:var(--text-2); margin-bottom:40px; }
+
+  .plans-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; text-align:left; }
+  .plan-card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; position:relative; }
+  .plan-card.featured { border-color:var(--accent); }
+  .plan-card.featured::before { content:'Most popular'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; font-size:11px; font-weight:700; padding:2px 14px; border-radius:999px; }
+  .plan-name { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-2); }
+  .plan-price { display:flex; align-items:baseline; gap:3px; margin:14px 0 4px; }
+  .price-sym { font-size:20px; font-weight:600; }
+  .price-amt { font-size:36px; font-weight:700; letter-spacing:-0.03em; }
+  .price-per { font-size:13px; color:var(--text-3); }
+  .price-sub { font-size:12px; color:var(--text-3); margin-bottom:14px; }
+  .plan-features { list-style:none; padding:0; margin:0 0 18px; }
+  .plan-features li { display:flex; gap:8px; font-size:13.5px; padding:5px 0; border-bottom:1px solid var(--border); }
+  .plan-features li:last-child { border:none; }
+  .chk { color:var(--green); flex-shrink:0; font-size:12px; margin-top:2px; }
+  .btn-rz { display:block; width:100%; padding:10px; border-radius:var(--radius); background:var(--accent); color:#fff; font-size:13.5px; font-weight:600; text-align:center; border:none; cursor:pointer; margin-bottom:7px; font-family:var(--font); }
+  .btn-rz:hover { opacity:0.85; }
+  .btn-pp { display:block; width:100%; padding:10px; border-radius:var(--radius); background:var(--bg-2); border:1px solid var(--border-2); color:var(--text-2); font-size:13px; font-weight:500; text-align:center; }
+  .btn-pp:hover { border-color:var(--border-3); color:var(--text); }
+  .pay-note { font-size:11.5px; color:var(--text-3); text-align:center; margin-top:8px; }
+  .back-link { display:block; margin-top:28px; font-size:13px; color:var(--text-3); }
+  .back-link:hover { color:var(--text-2); }
+</style>
+
+<div class="upgrade-wrap">
+  <div class="upgrade-icon">🚀</div>
+  <h1>You've used all 6 free scans.</h1>
+  <p>Upgrade to keep shipping secure code.</p>
+
+  <div class="plans-grid">
+    <!-- Monthly -->
+    <div class="plan-card featured">
+      <div class="plan-name">Pro Monthly</div>
+      <div class="plan-price">
+        <span class="price-sym">₹</span>
+        <span class="price-amt">199</span>
+        <span class="price-per">/month</span>
+      </div>
+      <div class="price-sub">~$2.4 USD · cancel anytime</div>
+      <ul class="plan-features">
+        <li><span class="chk">✓</span>Unlimited scans</li>
+        <li><span class="chk">✓</span>OWASP Top 10 + CWE</li>
+        <li><span class="chk">✓</span>AI-enhanced analysis</li>
+        <li><span class="chk">✓</span>PDF report export</li>
+      </ul>
+      <a href="{% url 'payments:checkout' 'razorpay' 'pro-monthly' %}" class="btn-rz">Pay ₹199 — UPI / Card →</a>
+      <a href="{% url 'payments:checkout' 'paypal' 'pro-monthly' %}" class="btn-pp">Pay with PayPal</a>
+      <div class="pay-note">🔒 Secured by Razorpay</div>
+    </div>
+
+    <!-- Yearly -->
+    <div class="plan-card">
+      <div class="plan-name">Pro Yearly</div>
+      <div class="plan-price">
+        <span class="price-sym">₹</span>
+        <span class="price-amt">2330</span>
+        <span class="price-per">/year</span>
+      </div>
+      <div class="price-sub">₹194/month — 2 months free</div>
+      <ul class="plan-features">
+        <li><span class="chk">✓</span>Everything in Pro Monthly</li>
+        <li><span class="chk">✓</span>2 months free vs monthly</li>
+        <li><span class="chk">✓</span>Early access to features</li>
+        <li><span class="chk">✓</span>Dedicated support</li>
+      </ul>
+      <a href="{% url 'payments:checkout' 'razorpay' 'pro-yearly' %}" class="btn-rz">Pay ₹2330 — UPI / Card →</a>
+      <a href="{% url 'payments:checkout' 'paypal' 'pro-yearly' %}" class="btn-pp">Pay with PayPal</a>
+      <div class="pay-note">🔒 Secured by Razorpay</div>
+    </div>
+  </div>
+
+  <a href="{% url 'dashboard:home' %}" class="back-link">← Back to dashboard</a>
+</div>
+{% endblock %}

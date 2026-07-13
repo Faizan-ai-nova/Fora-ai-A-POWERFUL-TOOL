@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ post.seo_title }}{% endblock %}
+{% block meta_description %}{{ post.seo_description }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.seo_description }}{% endblock %}
+{% block body_class %}editorial{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ post.title|escapejs }}",
+  "description": "{{ post.seo_description|escapejs }}",
+  "author": { "@type": "Organization", "name": "Fora AI" },
+  "publisher": { "@type": "Organization", "name": "Fora AI" },
+  "datePublished": "{{ post.published_at|date:'c' }}",
+  "dateModified": "{{ post.updated_at|date:'c' }}",
+  "mainEntityOfPage": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="editorial-shell">
+  <header class="editorial-hero">
+    {% if post.category %}<span class="editorial-kicker">{{ post.category.name }}</span>{% endif %}
+    <h1>{{ post.title }}</h1>
+    <p class="editorial-dek">{{ post.excerpt }}</p>
+    <div class="editorial-meta">
+      <span class="editorial-avatar">{{ post.author_name|first }}</span>
+      <span>{{ post.author_name }}</span>
+      <span class="dot"></span>
+      <span>{{ post.published_at|date:"F j, Y" }}</span>
+      <span class="dot"></span>
+      <span>{{ post.reading_time_minutes }} min read</span>
+    </div>
+  </header>
+
+  <article class="editorial-prose">
+    {{ post.body_html|safe }}
+  </article>
+
+  {% if related_posts %}
+  <div class="editorial-related">
+    <h3>More on {{ post.category.name|default:"this topic" }}</h3>
+    {% for rp in related_posts %}
+      <a href="{{ rp.get_absolute_url }}" class="related-post-link">{{ rp.title }} →</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div style="padding: 0 0 60px;">
+    <a href="{% url 'blog:list' %}" class="text-muted" style="font-size:13.5px;">← Back to all posts</a>
+  </div>
+</div>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

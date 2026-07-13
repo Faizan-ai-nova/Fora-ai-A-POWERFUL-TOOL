@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Terms of Service — Fora AI{% endblock %}
+{% block meta_description %}The terms that govern use of Fora AI's website and security scanning service.{% endblock %}
+{% block body_class %}editorial{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="editorial-shell">
+  <header class="editorial-hero">
+    <span class="editorial-kicker">Legal</span>
+    <h1>Terms of Service</h1>
+  </header>
+
+  <div class="editorial-prose legal-prose">
+    <p class="legal-updated">Last updated: {% now "F j, Y" %}</p>
+
+    <p>
+      These Terms govern your use of Fora AI's website and scanning service (the
+      "Service"). By creating an account or using the Service, you agree to these Terms. If
+      you don't agree, please don't use the Service.
+    </p>
+
+    <h2>1. What the Service does — and doesn't — do</h2>
+    <p>
+      Fora AI analyzes code you submit and reports potential security issues, along with
+      suggested fixes. It's a helpful second set of eyes, not a guarantee. No scanner —
+      ours included — can catch every vulnerability, and a clean report is not a certification
+      that your code is free of security issues. You remain responsible for the security of
+      your own applications and for independently verifying anything critical.
+    </p>
+
+    <h2>2. Your account</h2>
+    <p>
+      You're responsible for keeping your account credentials confidential and for all
+      activity under your account. Let us know immediately at
+      <a href="mailto:support@freebugai.com">support@freebugai.com</a> if you suspect
+      unauthorized access.
+    </p>
+
+    <h2>3. Acceptable use</h2>
+    <p>You agree not to:</p>
+    <ul>
+      <li>Submit code or files you don't have the right to share with us</li>
+      <li>Use the Service to build or test malware, or for any unlawful purpose</li>
+      <li>Attempt to bypass scan limits, rate limits, or subscription tiers through automation or abuse</li>
+      <li>Attempt to reverse engineer, scrape, or interfere with the Service's infrastructure</li>
+      <li>Resell or redistribute the Service without our written permission</li>
+    </ul>
+
+    <h2>4. Your content</h2>
+    <p>
+      You retain all ownership rights to the code you submit. You grant us a limited license
+      to store and process that code solely to provide the Service to you (generating scan
+      results, showing your history, and, where you've configured it, sending code to a
+      third-party AI provider for analysis). We do not claim ownership of your code and do
+      not use it to train our own models.
+    </p>
+
+    <h2>5. Subscriptions and billing</h2>
+    <p>
+      Free accounts include a limited number of scans as described on our pricing page. Paid
+      plans renew automatically each billing period until canceled. You can cancel at any
+      time from your account settings; cancellation takes effect at the end of the current
+      billing period, and we don't provide prorated refunds for partial periods except where
+      required by law. Payments are processed by Stripe and PayPal under their own terms.
+    </p>
+
+    <h2>6. Intellectual property</h2>
+    <p>
+      The Service, including its design, branding, and underlying software (excluding your
+      own submitted code), is owned by Fora AI and protected by applicable intellectual
+      property laws. You may not copy, modify, or create derivative works of the Service
+      itself without our permission.
+    </p>
+
+    <h2>7. Disclaimers</h2>
+    <p>
+      The Service is provided "as is" without warranties of any kind, express or implied,
+      including any warranty of merchantability, fitness for a particular purpose, or
+      non-infringement. We do not warrant that the Service will be uninterrupted, error-free,
+      or that it will detect every security vulnerability in your code.
+    </p>
+
+    <h2>8. Limitation of liability</h2>
+    <p>
+      To the maximum extent permitted by law, Fora AI will not be liable for any indirect,
+      incidental, special, consequential, or punitive damages, or any loss of data, profits,
+      or revenue, arising from your use of the Service, even if we've been advised of the
+      possibility of such damages.
+    </p>
+
+    <h2>9. Termination</h2>
+    <p>
+      You may stop using the Service and close your account at any time. We may suspend or
+      terminate your access if you violate these Terms or use the Service in a way that
+      creates risk or legal exposure for us.
+    </p>
+
+    <h2>10. Changes to these Terms</h2>
+    <p>
+      We may update these Terms from time to time. If we make material changes, we'll notify
+      you by email or through a notice on the Service. Continued use of the Service after a
+      change takes effect constitutes acceptance of the updated Terms.
+    </p>
+
+    <h2>11. Contact</h2>
+    <p>
+      Questions about these Terms can be sent to
+      <a href="mailto:support@freebugai.com">support@freebugai.com</a>.
+    </p>
+  </div>
+</div>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

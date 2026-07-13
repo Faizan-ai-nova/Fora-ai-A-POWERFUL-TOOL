@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Checkout — Fora AI{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Map this page's local tokens onto the real design system (style.css) */
+  :root {
+    --bg: var(--bg-primary);
+    --bg-1: var(--bg-elevated);
+    --bg-2: var(--bg-secondary);
+    --bg-3: var(--bg-glass-hover);
+    --border: var(--border-glass);
+    --border-2: var(--border-glass);
+    --border-3: var(--border-glass-strong);
+    --text: var(--text-primary);
+    --text-2: var(--text-secondary);
+    --text-3: var(--text-muted);
+    --accent: var(--accent-indigo);
+    --accent-2: var(--accent-indigo);
+    --radius: var(--radius-sm);
+    --font: var(--font-body);
+    --transition: 0.15s ease;
+  }
+  .checkout-page {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 16px;
+    background: var(--bg);
+  }
+  .checkout-box {
+    width: 100%; max-width: 420px;
+    background: var(--bg-1); border: 1px solid var(--border-2);
+    border-radius: var(--radius-lg); padding: 36px;
+  }
+  .checkout-logo {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 28px;
+  }
+  .checkout-bug {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .checkout-logo span { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; }
+
+  .plan-summary {
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 24px;
+  }
+  .plan-summary .plan-name { font-size: 13px; color: var(--text-2); margin-bottom: 4px; }
+  .plan-summary .plan-price {
+    font-size: 32px; font-weight: 700; letter-spacing: -0.03em;
+  }
+  .plan-summary .plan-price span { font-size: 15px; color: var(--text-3); font-weight: 400; }
+  .plan-summary .plan-billing { font-size: 12.5px; color: var(--text-3); margin-top: 4px; }
+
+  .method-label {
+    font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); margin-bottom: 12px;
+  }
+  .method-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .method-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border-2); background: var(--bg-2);
+    cursor: pointer; font-size: 14px; color: var(--text);
+    font-family: var(--font); font-weight: 500;
+    transition: border-color var(--transition), background var(--transition);
+    width: 100%; text-align: left;
+  }
+  .method-btn:hover { border-color: var(--border-3); background: var(--bg-3); }
+  .method-btn.selected { border-color: var(--accent); background: var(--accent-gradient-soft); }
+  .method-icon { font-size: 20px; width: 28px; text-align: center; }
+  .method-info { display: flex; flex-direction: column; gap: 2px; }
+  .method-info .m-name { font-size: 14px; font-weight: 500; }
+  .method-info .m-sub { font-size: 12px; color: var(--text-3); }
+
+  .pay-btn {
+    width: 100%; padding: 13px; border-radius: var(--radius);
+    background: var(--accent); color: #12100a; font-size: 15px; font-weight: 600;
+    border: none; cursor: pointer; transition: opacity var(--transition);
+    font-family: var(--font);
+  }
+  .pay-btn:hover { opacity: 0.88; }
+  .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .secure-note {
+    display: flex; align-items: center; gap: 6px; justify-content: center;
+    margin-top: 14px; font-size: 12px; color: var(--text-3);
+  }
+
+  .back-link { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-3); }
+  .back-link:hover { color: var(--text-2); }
+
+  /* Processing overlay */
+  #processing {
+    display: none; position: fixed; inset: 0;
+    background: rgba(9,9,11,0.94);
+    z-index: 9999; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    color: var(--text-2); font-size: 14px;
+  }
+  #processing.show { display: flex; }
+  .spin {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid var(--border-2);
+    border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div id="processing"><div class="spin"></div><span>Processing payment…</span></div>
+
+<div class="checkout-page">
+  <div class="checkout-box">
+    <div class="checkout-logo">
+      <span class="checkout-bug">🐛</span>
+      <span>Fora<span style="color:var(--accent-2);">AI</span></span>
+    </div>
+
+    <!-- Plan summary -->
+    <div class="plan-summary">
+      <div class="plan-name">{{ plan.name }}</div>
+      <div class="plan-price">
+        ₹{{ plan.display_price_inr }}<span>/{% if plan.billing_period == 'yearly' %}year{% else %}month{% endif %}</span>
+      </div>
+      <div class="plan-billing">
+        {% if plan.billing_period == 'yearly' %}Billed annually — save 2 months{% else %}Billed monthly, cancel anytime{% endif %}
+      </div>
+    </div>
+
+    <!-- Payment method selector -->
+    <div class="method-label">Select payment method</div>
+    <div class="method-options">
+      <button class="method-btn selected" id="btn-card" onclick="selectMethod('card')">
+        <span class="method-icon">💳</span>
+        <div class="method-info">
+          <span class="m-name">Card / UPI / Net Banking</span>
+          <span class="m-sub">Visa, Mastercard, RuPay, UPI, more</span>
+        </div>
+      </button>
+      <button class="method-btn" id="btn-upi" onclick="selectMethod('upi')">
+        <span class="method-icon">📱</span>
+        <div class="method-info">
+          <span class="m-name">UPI (GPay, PhonePe, Paytm)</span>
+          <span class="m-sub">Pay via any UPI app</span>
+        </div>
+      </button>
+      <button class="method-btn" id="btn-paypal" onclick="window.location.href='{% url 'payments:checkout' 'paypal' plan.slug %}'">
+        <span class="method-icon">🅿</span>
+        <div class="method-info">
+          <span class="m-name">PayPal</span>
+          <span class="m-sub">Pay via PayPal account</span>
+        </div>
+      </button>
+    </div>
+
+    <button class="pay-btn" id="payBtn" onclick="startPayment()">
+      Pay ₹{{ plan.display_price_inr }} →
+    </button>
+
+    <div class="secure-note">🔒 Secured by Razorpay · PCI DSS compliant</div>
+    <a href="{% url 'subscriptions:pricing' %}" class="back-link">← Back to pricing</a>
+  </div>
+</div>
+
+<!-- Razorpay checkout.js -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const RZ = {
+    key:       "{{ razorpay_data.key_id }}",
+    orderId:   "{{ razorpay_data.order_id }}",
+    amount:    {{ razorpay_data.amount }},
+    currency:  "{{ razorpay_data.currency }}",
+    name:      "Fora AI",
+    desc:      "{{ plan.name }} — {{ plan.tagline }}",
+    userName:  "{{ razorpay_data.user_name }}",
+    userEmail: "{{ razorpay_data.user_email }}",
+    planId:    "{{ plan.id }}",
+    verifyUrl: "{% url 'payments:razorpay_verify' %}",
+    csrfToken: "{{ csrf_token }}",
+  };
+
+  let selectedMethod = 'card';
+
+  function selectMethod(m) {
+    selectedMethod = m;
+    document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+    const el = document.getElementById('btn-' + m);
+    if (el) el.classList.add('selected');
+  }
+
+  function startPayment() {
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+
+    const prefill = {
+      method: selectedMethod === 'upi' ? 'upi' : undefined,
+    };
+
+    const options = {
+      key: RZ.key,
+      amount: RZ.amount,
+      currency: RZ.currency,
+      name: RZ.name,
+      description: RZ.desc,
+      order_id: RZ.orderId,
+      prefill: {
+        name: RZ.userName,
+        email: RZ.userEmail,
+        method: selectedMethod === 'upi' ? 'upi' : '',
+      },
+      theme: { color: '#e0a83e' },
+      modal: {
+        ondismiss: () => { btn.disabled = false; }
+      },
+      handler: async function(response) {
+        document.getElementById('processing').classList.add('show');
+        try {
+          const res = await fetch(RZ.verifyUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': RZ.csrfToken,
+            },
+            body: JSON.stringify({
+              razorpay_order_id:   response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature:  response.razorpay_signature,
+              plan_id:             RZ.planId,
+            }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            window.location.href = data.redirect;
+          } else {
+            document.getElementById('processing').classList.remove('show');
+            alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+            btn.disabled = false;
+          }
+        } catch(err) {
+          document.getElementById('processing').classList.remove('show');
+          alert('Network error during verification. Contact support@freebugai.com');
+          btn.disabled = false;
+        }
+      },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  }
+</script>
+{% endblock %}

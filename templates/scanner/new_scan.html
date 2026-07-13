@@ -1,0 +1,100 @@
+{% extends "partials/app_base.html" %}
+{% block title %}New Scan — Fora AI{% endblock %}
+{% block app_content %}
+<div class="mb-24">
+  <h1 style="font-size: 26px;">Run a new security scan</h1>
+  <p class="text-secondary mt-8">
+    {{ scans_remaining }} scan{{ scans_remaining|pluralize }} remaining on your plan · Supports Python, Django, JavaScript, HTML &amp; CSS
+  </p>
+</div>
+
+<div class="glass-card padded" data-tabs>
+  <div class="flex gap-8 mb-24" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
+    <button type="button" class="btn btn-secondary btn-sm active" data-tab-btn="paste">📋 Paste Code</button>
+    <button type="button" class="btn btn-ghost btn-sm" data-tab-btn="file">📄 Upload File</button>
+    <button type="button" class="btn btn-ghost btn-sm" data-tab-btn="zip">📦 Upload ZIP Project</button>
+  </div>
+
+  <!-- Paste code -->
+  <div data-tab-panel="paste">
+    <form method="post" action="{% url 'scanner:scan_paste' %}" data-scan-form>
+      {% csrf_token %}
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Project name (optional)</label>
+          {{ paste_form.project_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Filename hint (optional)</label>
+          {{ paste_form.filename_hint }}
+          <div class="form-help">e.g. "views.py" helps us pick the right rule set</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your code</label>
+        {{ paste_form.code }}
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">🔍 Scan Code</button>
+    </form>
+  </div>
+
+  <!-- Upload single file -->
+  <div data-tab-panel="file" style="display:none;">
+    <form method="post" action="{% url 'scanner:scan_file' %}" enctype="multipart/form-data" data-scan-form>
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Project name (optional)</label>
+        {{ file_form.project_name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">File</label>
+        <div class="glass-card" data-dropzone style="padding: 40px; text-align:center; cursor:pointer; border-style:dashed;">
+          <div style="font-size:32px;">📄</div>
+          <div data-dropzone-label class="mt-8">Click or drag a file here (.py .js .html .css)</div>
+          {{ file_form.file }}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg mt-16">🔍 Scan File</button>
+    </form>
+  </div>
+
+  <!-- Upload ZIP -->
+  <div data-tab-panel="zip" style="display:none;">
+    <form method="post" action="{% url 'scanner:scan_zip' %}" enctype="multipart/form-data" data-scan-form>
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Project name (optional)</label>
+        {{ zip_form.project_name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">ZIP file</label>
+        <div class="glass-card" data-dropzone style="padding: 40px; text-align:center; cursor:pointer; border-style:dashed;">
+          <div style="font-size:32px;">📦</div>
+          <div data-dropzone-label class="mt-8">Click or drag your project .zip here (max 15MB)</div>
+          {{ zip_form.zip_file }}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg mt-16">🔍 Scan Project</button>
+    </form>
+  </div>
+</div>
+
+<style>
+[data-tab-btn].active { background: var(--accent-gradient); color: #fff; border-color: transparent; }
+[data-dropzone].drag-active { border-color: var(--accent-cyan) !important; background: var(--bg-glass-hover); }
+[data-dropzone] input[type="file"] { display:none; }
+</style>
+<script>
+  // Ensure default active tab styling matches JS toggle behavior in main.js
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-tab-btn]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-tab-btn]').forEach(b => b.classList.remove('btn-secondary'));
+        document.querySelectorAll('[data-tab-btn]').forEach(b => b.classList.add('btn-ghost'));
+        btn.classList.remove('btn-ghost');
+        btn.classList.add('btn-secondary');
+      });
+    });
+  });
+</script>
+{% endblock %}

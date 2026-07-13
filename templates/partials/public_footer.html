@@ -1,0 +1,12 @@
+<footer style="padding: 40px; border-top: 1px solid var(--border-glass);">
+  <div class="flex-between" style="max-width: 1080px; margin: 0 auto; flex-wrap: wrap; gap: 16px;">
+    <p class="text-muted" style="font-size:13px; margin:0;">© {% now "Y" %} Fora AI. Built for developers who ship fast and stay safe.</p>
+    <div class="flex gap-16">
+      <a href="{% url 'pages:about' %}" class="text-muted" style="font-size:13px;">About</a>
+      <a href="{% url 'blog:list' %}" class="text-muted" style="font-size:13px;">Blog</a>
+      <a href="{% url 'subscriptions:pricing' %}" class="text-muted" style="font-size:13px;">Pricing</a>
+      <a href="{% url 'pages:privacy' %}" class="text-muted" style="font-size:13px;">Privacy</a>
+      <a href="{% url 'pages:terms' %}" class="text-muted" style="font-size:13px;">Terms</a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Fora AI — Find Vulnerabilities Before Attackers Do{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Fora AI",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Web",
+  "description": "AI-powered static analysis that scans Python, Django, JavaScript, HTML and CSS for SQL injection, XSS, hardcoded secrets, and OWASP Top 10 vulnerabilities.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<section style="padding: clamp(48px,10vw,90px) clamp(20px,5vw,40px) 60px;">
+  <div class="container" style="max-width: 1080px;">
+    <div style="text-align:center; max-width: 720px; margin: 0 auto 56px;">
+      <span class="tag-pill mono mb-16" style="display:inline-block;">$ static analysis · AI-powered</span>
+      <h1 style="font-size: clamp(32px,7vw,52px); line-height: 1.15; margin: 20px 0;">
+        Ship code that doesn't <span class="text-gradient">get you hacked.</span>
+      </h1>
+      <p class="text-secondary" style="font-size: clamp(15.5px,3.5vw,18px); line-height: 1.6;">
+        Paste code, upload a file, or drop a whole ZIP project. Fora AI scans your
+        Python, Django, JavaScript, HTML and CSS for SQL injection, XSS, hardcoded
+        secrets, and every OWASP Top 10 issue — with a fix for each one.
+      </p>
+      <div class="flex gap-16" style="justify-content: center; margin-top: 32px; flex-wrap: wrap;">
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg">Start scanning free →</a>
+        <a href="{% url 'subscriptions:pricing' %}" class="btn btn-secondary btn-lg">See pricing</a>
+      </div>
+      <p class="text-muted mt-16" style="font-size: 13.5px;">No credit card required · 10 free scans on signup</p>
+    </div>
+
+    <!-- Signature element: animated scan beam over a real code sample -->
+    <div class="hero-code-frame">
+      <div class="frame-header">
+        <span class="frame-dot" style="background:#f43f5e;"></span>
+        <span class="frame-dot" style="background:#fbbf24;"></span>
+        <span class="frame-dot" style="background:#10b981;"></span>
+        <span class="text-muted mono" style="margin-left:10px; font-size:12.5px;">views.py</span>
+      </div>
+      <pre>def get_user(request):
+    user_id = request.GET.get('id')
+    query = "SELECT * FROM users WHERE id = " + user_id
+    cursor.execute(query)
+    return render(request, 'user.html', {'user': cursor.fetchone()})
+
+def save_settings(request):
+    api_key = "sk_live_51Hc8x9J3fA2s..."
+    return JsonResponse({'status': 'ok'})</pre>
+      <div class="beam"></div>
+      <span class="hero-flag badge-critical" style="top: 20%;">Critical · SQL Injection</span>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="padding: 60px clamp(20px,5vw,40px);">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px);">Everything you need to ship secure code</h2>
+    <p class="text-secondary" style="text-align:center; max-width: 560px; margin: 12px auto 48px;">
+      One scan surfaces the issue, why it matters, and exactly how to fix it.
+    </p>
+    <div class="stat-grid">
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--danger);">SQLi / XSS</div>
+        <h3 class="mt-16" style="font-size:17px;">Injection &amp; XSS</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">SQL injection, command injection, and cross-site scripting across every language you paste in.</p>
+      </div>
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--high);">SECRET</div>
+        <h3 class="mt-16" style="font-size:17px;">Hardcoded Secrets</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">Catch API keys, tokens, and passwords committed straight into your source.</p>
+      </div>
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--medium);">CSRF / AUTH</div>
+        <h3 class="mt-16" style="font-size:17px;">CSRF &amp; Auth Flaws</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">Missing CSRF tokens, weak password logic, and broken authentication patterns.</p>
+      </div>
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--low);">OWASP-10</div>
+        <h3 class="mt-16" style="font-size:17px;">OWASP Top 10</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">Mapped to OWASP references so you know exactly what standard each issue violates.</p>
+      </div>
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--text-muted);">*.zip</div>
+        <h3 class="mt-16" style="font-size:17px;">Whole-Project Scans</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">Upload a ZIP of your Django project and scan every file in one pass.</p>
+      </div>
+      <div class="glass-card padded">
+        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--accent-indigo);">BYO-KEY</div>
+        <h3 class="mt-16" style="font-size:17px;">AI-Ready Engine</h3>
+        <p class="text-secondary mt-8" style="font-size:14px;">Pluggable architecture for Gemini, OpenAI, Claude, or Groq — bring your own key.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" style="padding: 60px clamp(20px,5vw,40px);">
+  <div class="container-narrow">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 48px;">How it works</h2>
+    <div class="flex-col gap-24">
+      <div class="glass-card padded flex gap-16">
+        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">01</div>
+        <div><h3 style="font-size:16px;">Paste, upload, or drop a ZIP</h3><p class="text-secondary mt-8" style="font-size:14px;">Bring code from anywhere — a single file or an entire project.</p></div>
+      </div>
+      <div class="glass-card padded flex gap-16">
+        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">02</div>
+        <div><h3 style="font-size:16px;">Fora AI scans every line</h3><p class="text-secondary mt-8" style="font-size:14px;">Our engine checks for OWASP Top 10 issues and language-specific pitfalls.</p></div>
+      </div>
+      <div class="glass-card padded flex gap-16">
+        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">03</div>
+        <div><h3 style="font-size:16px;">Get a score and a fix for every issue</h3><p class="text-secondary mt-8" style="font-size:14px;">A 0–100 security score, severity breakdown, and secure code examples.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" style="padding: 60px clamp(20px,5vw,40px);">
+  <div class="container-narrow">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 12px;">See Fora AI in action</h2>
+    <p class="text-secondary" style="text-align:center; max-width: 520px; margin: 0 auto 40px;">
+      Watch a full scan, top to bottom, in under two minutes.
+    </p>
+    <div class="glass-card" style="padding: 12px; overflow: hidden;">
+      <div style="position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius); overflow: hidden;">
+        <iframe
+          src="https://www.youtube.com/embed/1PaoWKvcJP0"
+          title="Fora AI demo video"
+          style="position: absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 60px clamp(20px,5vw,40px) 100px;">
+  <div class="container-narrow">
+    <div class="glass-card padded" style="text-align:center; padding: clamp(32px,8vw,56px) clamp(20px,6vw,32px);">
+      <h2 style="font-size: clamp(22px,5vw,30px);">Your first 10 scans are on us.</h2>
+      <p class="text-secondary mt-8">No credit card. No commitment. Just a security score in seconds.</p>
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg mt-24">Create your free account</a>
+    </div>
+  </div>
+</section>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

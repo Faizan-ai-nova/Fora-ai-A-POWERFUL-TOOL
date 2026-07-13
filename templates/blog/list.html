@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Blog — Fora AI{% endblock %}
+{% block meta_description %}Practical writing on Django security, OWASP fundamentals, and application security basics — no jargon, no filler.{% endblock %}
+{% block body_class %}editorial{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="editorial-shell">
+  <header class="blog-header">
+    <span class="editorial-kicker">Blog</span>
+    <h1 class="editorial-font" style="font-size: clamp(28px,6vw,40px); letter-spacing: -0.01em;">Notes on shipping secure code</h1>
+    <p class="editorial-dek text-secondary" style="font-size:16.5px; margin-top:14px; max-width:560px;">
+      Practical write-ups on the vulnerabilities we see most often, written for developers rather than auditors.
+    </p>
+
+    <div class="blog-filter-row">
+      <a href="{% url 'blog:list' %}" class="blog-filter-pill {% if not active_category %}active{% endif %}">All posts</a>
+      {% for cat in categories %}
+        <a href="?category={{ cat.slug }}" class="blog-filter-pill {% if active_category.slug == cat.slug %}active{% endif %}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+  </header>
+
+  <div class="post-list">
+    {% for post in page_obj.object_list %}
+      <a href="{{ post.get_absolute_url }}" class="post-row">
+        <span class="post-date">{{ post.published_at|date:"M j, Y" }}</span>
+        <div class="post-body">
+          <h2>{{ post.cover_emoji }} {{ post.title }}</h2>
+          <p>{{ post.excerpt }}</p>
+          <div class="post-tags">
+            {% if post.category %}<span class="tag-pill">{{ post.category.name }}</span>{% endif %}
+            <span class="tag-pill">{{ post.reading_time_minutes }} min read</span>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <div class="empty-state">
+        <p>No posts published yet — check back soon.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <div class="flex gap-8 mt-24 mb-24" style="justify-content:center;">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm">← Prev</a>{% endif %}
+    <span class="text-muted" style="align-self:center; font-size:13.5px;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm">Next →</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

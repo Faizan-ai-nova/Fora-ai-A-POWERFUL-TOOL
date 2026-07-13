@@ -1,0 +1,10 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Payment successful — Fora AI{% endblock %}
+{% block app_content %}
+<div class="container-narrow" style="text-align:center; padding: 60px 0;">
+  <div style="font-size: 48px;">🎉</div>
+  <h1 style="font-size: 28px; margin-top:16px;">You're all set!</h1>
+  <p class="text-secondary mt-16">Your subscription is active. Enjoy unlimited AI security scans.</p>
+  <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary btn-lg mt-24">Start a scan</a>
+</div>
+{% endblock %}
