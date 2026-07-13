@@ -87,7 +87,7 @@ class UPIProvider(PaymentProvider):
                 message,
                 getattr(settings, 'DEFAULT_FROM_EMAIL', None),
                 [admin_email],
-                fail_silently=True,
+                fail_silently=False,
             )
         except Exception as exc:  # pragma: no cover
             logger.error('UPI admin notification email failed: %s', exc)
@@ -110,7 +110,7 @@ class UPIProvider(PaymentProvider):
                 message,
                 getattr(settings, 'DEFAULT_FROM_EMAIL', None),
                 [user.email],
-                fail_silently=True,
+                fail_silently=False,
             )
         except Exception as exc:  # pragma: no cover
             logger.error('UPI user notification email failed: %s', exc)
