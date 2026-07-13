@@ -40,6 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ---------- Navbar toggle (mobile, public pages) ----------
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+  const navScrim = document.getElementById('navScrim');
+  if (navToggle && navMenu) {
+    const closeNav = () => {
+      navMenu.classList.remove('open');
+      navScrim?.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    };
+    const openNav = () => {
+      navMenu.classList.add('open');
+      navScrim?.classList.add('open');
+      navToggle.setAttribute('aria-expanded', 'true');
+    };
+    navToggle.addEventListener('click', () => {
+      const isOpen = navMenu.classList.contains('open');
+      isOpen ? closeNav() : openNav();
+    });
+    navScrim?.addEventListener('click', closeNav);
+    navMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', closeNav));
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 860) closeNav();
+    });
+  }
+
   // ---------- Tab switching (scan input methods) ----------
   document.querySelectorAll('[data-tabs]').forEach((tabGroup) => {
     const buttons = tabGroup.querySelectorAll('[data-tab-btn]');
