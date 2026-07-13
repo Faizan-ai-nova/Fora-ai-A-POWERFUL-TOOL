@@ -215,11 +215,73 @@ code, pre, .mono { font-family: var(--font-mono); }
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-glass);
 }
-.navbar-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+.navbar-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 18px; flex-shrink: 0; }
+.navbar-menu { display: contents; }
 .navbar-links { display: flex; align-items: center; gap: 28px; }
-.navbar-links a { color: var(--text-secondary); font-size: 14.5px; font-weight: 500; transition: color 0.2s; }
+.navbar-links a { color: var(--text-secondary); font-size: 14.5px; font-weight: 500; transition: color 0.2s; white-space: nowrap; }
 .navbar-links a:hover { color: var(--text-primary); }
-.navbar-actions { display: flex; align-items: center; gap: 12px; }
+.navbar-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+/* Hamburger toggle button — hidden on desktop */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 38px; height: 38px;
+  padding: 0;
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  cursor: pointer;
+  flex-shrink: 0;
+  z-index: 60;
+}
+.nav-toggle-bar {
+  display: block; width: 18px; height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.navbar-scrim {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 45;
+}
+.navbar-scrim.open { display: block; }
+
+@media (max-width: 860px) {
+  .navbar { padding: 14px 20px; }
+  .nav-toggle { display: flex; }
+
+  .navbar-menu {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-glass);
+    padding: 8px 20px 20px;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+  .navbar-menu.open { display: flex; }
+
+  .navbar-links { flex-direction: column; align-items: stretch; gap: 0; }
+  .navbar-links a { padding: 13px 4px; border-bottom: 1px solid var(--border-glass); font-size: 15px; }
+
+  .navbar-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 14px; }
+  .navbar-actions .btn { width: 100%; }
+}
 
 /* --- Sidebar (app pages) --- */
 .sidebar {
