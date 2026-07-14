@@ -32,7 +32,7 @@ def checkout_view(request, provider_name, plan_slug):
     if not provider.is_configured:
         messages.info(
             request,
-           f"{provider.name.title()} PayPal is temporarily unavailable right now. Please try another payment method — we're working on getting it fixed soon. Sorry for the inconvenience!"
+           f"{provider.name.title()}  is temporarily unavailable right now. Please try another payment method — we're working on getting it fixed soon. Sorry for the inconvenience!"
         )
         return redirect('subscriptions:pricing')
 
