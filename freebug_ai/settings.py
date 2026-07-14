@@ -162,6 +162,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Fora AI <gamewithfaixu@gmail.com>')
 EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT',10))
+RESEND_API_KEY= os.getenv('RESEND_API_KEY','')
 
 # ------------------------------------------------------------------
 # SECURITY HARDENING (production, controlled via env vars)
