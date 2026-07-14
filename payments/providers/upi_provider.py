@@ -1,12 +1,52 @@
 import logging
 from urllib.parse import quote
 
+import requests
 from django.conf import settings
-from django.core.mail import send_mail
 
 from .base import PaymentProvider
 
 logger = logging.getLogger(__name__)
+
+RESEND_API_URL = 'https://api.resend.com/emails'
+
+
+def _send_via_resend(to_email: str, subject: str, text: str) -> bool:
+    """
+    Send an email through Resend's HTTP API (port 443) instead of raw SMTP.
+    Railway (and most PaaS hosts) block outbound SMTP ports, which used to
+    make send_mail() hang until the gunicorn worker got killed. This call
+    is a plain HTTPS POST, has a short timeout, and never raises - it just
+    logs and returns False on any failure so it can never break a checkout
+    request.
+    """
+    api_key = getattr(settings, 'RESEND_API_KEY', '')
+    if not api_key:
+        logger.warning('RESEND_API_KEY not set - skipping email: %s', subject)
+        return False
+
+    try:
+        resp = requests.post(
+            RESEND_API_URL,
+            headers={
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json',
+            },
+            json={
+                'from': getattr(settings, 'DEFAULT_FROM_EMAIL', 'Fora AI <no-reply@freebugai.com>'),
+                'to': [to_email],
+                'subject': subject,
+                'text': text,
+            },
+            timeout=8,  # fail fast, well under gunicorn's worker timeout
+        )
+        if resp.status_code >= 400:
+            logger.error('Resend email failed (%s): %s', resp.status_code, resp.text[:500])
+            return False
+        return True
+    except requests.RequestException as exc:
+        logger.error('Resend email request failed: %s', exc)
+        return False
 
 
 class UPIProvider(PaymentProvider):
@@ -24,9 +64,8 @@ class UPIProvider(PaymentProvider):
        from Django admin (an admin action activates the subscription and
        emails the user).
 
-    This is intentionally provider-agnostic so it's trivial to swap back to
-    Razorpay (or add another automated gateway) later - just point the
-    pricing page buttons at a different provider key in PROVIDERS.
+    Email delivery goes through Resend's HTTP API (see _send_via_resend)
+    rather than SMTP, since Railway blocks outbound SMTP ports.
     """
 
     name = 'upi'
@@ -81,16 +120,9 @@ class UPIProvider(PaymentProvider):
             f'Approve here: {getattr(settings, "SITE_DOMAIN", "")}/admin/payments/payment/{payment.id}/change/\n'
             f'(Use the "Approve selected UPI payments" action in the Payments list for a one-click activate.)'
         )
-        try:
-            send_mail(
-                subject,
-                message,
-                getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-                [admin_email],
-                fail_silently=False,
-            )
-        except Exception as exc:  # pragma: no cover
-            logger.error('UPI admin notification email failed: %s', exc)
+        ok = _send_via_resend(admin_email, subject, message)
+        if not ok:
+            logger.error('UPI admin notification email did not go out (payment id=%s).', payment.id)
 
     def notify_user_pending(self, user, plan) -> None:
         """Optional confirmation email to the user that their claim was received."""
@@ -104,16 +136,9 @@ class UPIProvider(PaymentProvider):
             f'within 30 minutes once confirmed.\n\n'
             f'Thanks for your patience,\nFora AI'
         )
-        try:
-            send_mail(
-                subject,
-                message,
-                getattr(settings, 'DEFAULT_FROM_EMAIL', None),
-                [user.email],
-                fail_silently=False,
-            )
-        except Exception as exc:  # pragma: no cover
-            logger.error('UPI user notification email failed: %s', exc)
+        ok = _send_via_resend(user.email, subject, message)
+        if not ok:
+            logger.error('UPI user notification email did not go out (user=%s).', user.username)
 
     # --- Required by the PaymentProvider interface, but not used for a manual flow ---
 
