@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 from pages.views import robots_txt, sitemap_xml
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('foraoops8082572326@09/', admin.site.urls),
     path('', TemplateView.as_view(template_name='landing.html'), name='landing'),
     path('accounts/', include('accounts.urls')),
     path('dashboard/', include('dashboard.urls')),
