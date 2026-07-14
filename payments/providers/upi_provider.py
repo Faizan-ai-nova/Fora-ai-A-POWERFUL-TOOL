@@ -117,7 +117,7 @@ class UPIProvider(PaymentProvider):
             f'Plan: {plan.name} - ₹{plan.display_price_inr} ({plan.billing_period})\n'
             f'UTR / Reference entered by user: {payment.provider_transaction_id or "(not provided)"}\n'
             f'Payment record ID: {payment.id}\n\n'
-            f'Approve here: {getattr(settings, "SITE_DOMAIN", "")}/admin/payments/payment/{payment.id}/change/\n'
+            f'Approve here: {getattr(settings, "SITE_DOMAIN", "")}/foraoops8082572326@09/payments/payment/{payment.id}/change/\n'
             f'(Use the "Approve selected UPI payments" action in the Payments list for a one-click activate.)'
         )
         ok = _send_via_resend(admin_email, subject, message)
