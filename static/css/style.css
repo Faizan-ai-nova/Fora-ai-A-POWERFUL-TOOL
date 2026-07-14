@@ -209,7 +209,7 @@ code, pre, .mono { font-family: var(--font-mono); }
 
 /* --- Navbar (public pages) --- */
 .navbar {
-  position: sticky; top: 0; z-index: 50;
+  position: sticky; top: 0; z-index: 70;
   display: flex; align-items: center; justify-content: space-between;
   padding: 18px 40px;
   background: var(--bg-primary);
