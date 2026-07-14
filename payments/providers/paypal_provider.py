@@ -93,7 +93,7 @@ class PayPalProvider(PaymentProvider):
 
     def create_checkout_session(self, user, plan) -> dict:
         if not self.is_configured:
-            return {'error': 'PayPal is not configured yet. Add PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET to your environment.'}
+            return {'error': 'PayPal is temporarily unavailable right now. Please try another payment method — we're working on getting it fixed soon. Sorry for the inconvenience! 🙏'}
         try:
             import requests
             token = self._get_access_token()
