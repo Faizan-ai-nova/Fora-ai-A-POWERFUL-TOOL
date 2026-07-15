@@ -11,7 +11,6 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.http import require_http_methods
 
 from .forms import RegisterForm, LoginForm, ForgotPasswordForm, SetNewPasswordForm, ProfileForm
-from .emails import send_welcome_email
 
 User = get_user_model()
 
@@ -36,8 +35,6 @@ def register_view(request):
                 defaults={'name': 'Free', 'price_monthly': 0, 'scan_limit': settings.FREE_PLAN_SCAN_LIMIT}
             )
             Subscription.objects.create(user=user, plan=free_plan, status='active')
-
-            send_welcome_email(user)
 
             login(request, user)
             messages.success(request, f'Welcome to Fora AI, {user.username}! You have {user.scans_remaining} free scans.')
