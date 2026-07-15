@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'reports',
     'pages',
     'blog',
-    'assistant',
 ]
 
 MIDDLEWARE = [
