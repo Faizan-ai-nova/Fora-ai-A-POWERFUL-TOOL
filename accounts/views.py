@@ -105,8 +105,10 @@ def forgot_password_view(request):
                     recipient_list=[user.email],
                     fail_silently=True,
                 )
+               # If an account exists with that email, a reset link has been sent
             # Always show the same message (avoid leaking whether an email exists)
-            messages.success(request, 'If an account exists with that email, a reset link has been sent.')
+            messages.success(request, 'Oops! This feature is temporarily unavailable.
+                              We are working on it — please check back soon.')
             return redirect('accounts:login')
     else:
         form = ForgotPasswordForm()
