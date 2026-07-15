@@ -150,23 +150,12 @@ def save_settings(request):
   <div class="container-narrow" style="text-align:center;">
     <h2 style="font-size: clamp(24px,5vw,34px); margin-bottom:12px;">Got feedback or found a bug?</h2>
     <p class="text-secondary" style="max-width: 520px; margin: 0 auto 24px;">Help us make Fora AI better — takes 2 minutes.</p>
-    <button onclick="document.getElementById('feedbackModal').style.display='flex'" class="btn btn-primary btn-lg">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc2BS3nrL9WVpKkl0gwSB6R5w7_FcEgBtgnyMVAUSvdNS-sDA/viewform"
+      target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">
       Give Feedback
-    </button>
+    </a>
   </div>
 </section>
-
-<!-- Feedback Modal -->
-<div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-  <div style="position:relative; width:100%; max-width:640px; max-height:90vh; background:#fff; border-radius:12px; overflow:hidden;">
-    <button onclick="document.getElementById('feedbackModal').style.display='none'"
-      style="position:absolute; top:8px; right:12px; background:none; border:none; font-size:24px; cursor:pointer; z-index:1001; color:#333;">×</button>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc2BS3nrL9WVpKkl0gwSB6R5w7_FcEgBtgnyMVAUSvdNS-sDA/viewform?embedded=true"
-      style="width:100%; height:85vh; border:none; display:block;">
-      Loading…
-    </iframe>
-  </div>
-</div>
 
 <section style="padding: 60px clamp(20px,5vw,40px) 100px;">
   <div class="container-narrow">
