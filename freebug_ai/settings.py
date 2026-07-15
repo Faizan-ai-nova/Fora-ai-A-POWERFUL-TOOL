@@ -158,8 +158,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # EMAIL (via Resend - used for admin UPI payment notifications)
 # ------------------------------------------------------------------
 EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 ANYMAIL = {
-    "RESEND_API_KEY": os.getenv("RESEND_API_KEY", ""),
+    "RESEND_API_KEY": RESEND_API_KEY,
 }
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Fora AI <onboarding@resend.dev>')
 
