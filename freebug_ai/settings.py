@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------------------------------------------------------
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production-please')
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'False'
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'reports',
     'pages',
     'blog',
+    'assistant',
 ]
 
 MIDDLEWARE = [
@@ -154,19 +155,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ------------------------------------------------------------------
 # EMAIL (password reset, report emails - console backend in dev)
 # ------------------------------------------------------------------
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Fora AI <gamewithfaixu@gmail.com>')
-EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT',10))
-RESEND_API_KEY= os.getenv('RESEND_API_KEY','')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Fora AI <no-reply@freebugai.com>')
 
 # ------------------------------------------------------------------
 # SECURITY HARDENING (production, controlled via env vars)
 # ------------------------------------------------------------------
+
+# Django's SecurityMiddleware defaults Referrer-Policy to "same-origin", which
+# strips the referrer on cross-origin requests (e.g. the YouTube <iframe> on the
+# landing page) and causes YouTube's "Error 153: Video player configuration
+# error". This applies in DEBUG too since that's where you're testing locally.
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
     SESSION_COOKIE_SECURE = True
