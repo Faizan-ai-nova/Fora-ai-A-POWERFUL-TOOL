@@ -16,6 +16,7 @@ urlpatterns = [
     path('subscriptions/', include('subscriptions.urls')),
     path('payments/', include('payments.urls')),
     path('reports/', include('reports.urls')),
+    path('integrations/', include('integrations.urls')),
     path('blog/', include('blog.urls')),
     path('', include('pages.urls')),
     path('robots.txt', robots_txt, name='robots_txt'),
