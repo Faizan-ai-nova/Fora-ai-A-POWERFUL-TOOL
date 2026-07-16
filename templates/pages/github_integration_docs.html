@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}GitHub Integration Guide — Scan on Every Push | Fora AI{% endblock %}
+{% block meta_description %}Learn how Fora AI's GitHub integration works: connect a repo with a Personal Access Token, and every push to your default branch is scanned for security issues automatically.{% endblock %}
+{% block og_title %}GitHub Integration Guide — Fora AI{% endblock %}
+{% block og_description %}Connect a GitHub repo to Fora AI and get an automatic security scan on every push to your default branch.{% endblock %}
+{% block body_class %}editorial{% endblock %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need to install a GitHub App?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Fora AI uses a GitHub Personal Access Token, so there is nothing to install or approve as an organization admin — you paste a token and connect a repo in under a minute." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which branch gets scanned?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Only pushes to the repository's default branch (usually main or master) trigger a scan. Pushes to other branches are ignored." }
+    },
+    {
+      "@type": "Question",
+      "name": "Where do I see the scan results?",
+      "acceptedAnswer": { "@type": "Answer", "text": "On the GitHub Integrations page in your Fora AI dashboard, under 'Last push scan' for that repo — click through to the full report, same as a manual scan." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my GitHub token safe?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Your token is stored only to read the connected repo and manage its webhook. It is never shown again after you paste it, and disconnecting a repo removes the webhook from GitHub immediately." }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<div class="editorial-shell">
+  <header class="editorial-hero">
+    <span class="editorial-kicker">Documentation</span>
+    <h1>GitHub Integration: scan every push automatically</h1>
+    <p class="editorial-dek">
+      Connect a repo once and Fora AI scans it on every push to the default branch —
+      no manual uploads, no CI config files, no GitHub App to install.
+    </p>
+  </header>
+
+  <div class="editorial-prose">
+
+    <h2>What it does</h2>
+    <p>
+      Once a repo is connected, Fora AI watches for pushes to its default branch
+      (usually <code>main</code> or <code>master</code>). Every time you push, we pull
+      the latest snapshot of the repo, run it through the same scan engine as a manual
+      ZIP upload, and save a full report — findings, severity breakdown, and a security
+      score — to your dashboard.
+    </p>
+
+    <h2>Connect a repo in 3 steps</h2>
+
+    <div class="doc-steps">
+      <div class="doc-step">
+        <div class="doc-step-num">1</div>
+        <div>
+          <h3>Create a GitHub Personal Access Token</h3>
+          <p>
+            Go to <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a>
+            and generate a fine-grained token scoped to the repo you want to connect, with
+            <strong>Contents: Read and write</strong> and <strong>Webhooks: Read and write</strong>
+            permissions.
+          </p>
+        </div>
+      </div>
+      <div class="doc-step">
+        <div class="doc-step-num">2</div>
+        <div>
+          <h3>Paste it into GitHub Integrations</h3>
+          <p>
+            In your dashboard, open <strong>GitHub Integrations</strong>, enter the repo as
+            <code>owner/repo</code>, paste the token, and click <strong>Connect repo</strong>.
+            Fora AI verifies access and registers a push webhook on the repo for you.
+          </p>
+        </div>
+      </div>
+      <div class="doc-step">
+        <div class="doc-step-num">3</div>
+        <div>
+          <h3>Push code as usual</h3>
+          <p>
+            The next push to the default branch — from your terminal, an IDE, or even a
+            direct commit in the GitHub UI — triggers a scan within seconds. No extra
+            command, no CI file to add to your repo.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <h2>Where results show up</h2>
+    <p>
+      Every push scan appears in two places: the <strong>GitHub Integrations</strong> page,
+      next to the repo it belongs to, and your normal <strong>Scan History</strong> — it's
+      treated exactly like a manually uploaded ZIP scan, so it counts toward the same plan
+      limits and shows the same detailed report.
+    </p>
+
+    <h2>Disconnecting a repo</h2>
+    <p>
+      Click <strong>Disconnect</strong> next to any connected repo. Fora AI removes the
+      webhook from GitHub immediately and deletes the stored token — pushes to that repo
+      stop triggering scans right away.
+    </p>
+
+    <h2>Security &amp; privacy</h2>
+    <ul>
+      <li>Your token is used only to read the connected repo's contents and to create/remove its webhook — nothing else.</li>
+      <li>Every push notification from GitHub is verified with a per-repo signed secret before any scan runs, so nobody else can trigger a scan on your account.</li>
+      <li>Disconnecting a repo deletes the token and webhook from our side and from GitHub in the same action.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="doc-faq" data-faq>
+      <div class="doc-faq-item">
+        <button type="button" class="doc-faq-q" data-faq-toggle>
+          Do I need to install a GitHub App?
+          <span class="doc-faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="doc-faq-a">
+          <p>No. Fora AI uses a Personal Access Token, so there's nothing to install or get organization-admin approval for — connecting a repo takes under a minute.</p>
+        </div>
+      </div>
+      <div class="doc-faq-item">
+        <button type="button" class="doc-faq-q" data-faq-toggle>
+          Which branch gets scanned?
+          <span class="doc-faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="doc-faq-a">
+          <p>Only pushes to the repository's default branch (usually <code>main</code> or <code>master</code>) trigger a scan. Pushes to feature branches are ignored.</p>
+        </div>
+      </div>
+      <div class="doc-faq-item">
+        <button type="button" class="doc-faq-q" data-faq-toggle>
+          I pushed but nothing happened — why?
+          <span class="doc-faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="doc-faq-a">
+          <p>Check the webhook's <strong>Recent Deliveries</strong> tab in your GitHub repo's Settings → Webhooks. A red/failed delivery there means GitHub couldn't reach Fora AI (check the response code); no delivery at all usually means the push landed on a branch other than the default one, or the repo's free-plan scan quota is used up.</p>
+        </div>
+      </div>
+      <div class="doc-faq-item">
+        <button type="button" class="doc-faq-q" data-faq-toggle>
+          Is my GitHub token safe?
+          <span class="doc-faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="doc-faq-a">
+          <p>Yes — it's stored only to read the connected repo and manage its webhook, it's never displayed again after you paste it, and disconnecting the repo removes it immediately.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-cta">
+      <h3 style="margin-top:0;">Ready to connect a repo?</h3>
+      <p class="mt-8 mb-16">Head to GitHub Integrations in your dashboard and paste your token.</p>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'integrations:list' %}" class="btn btn-primary">Go to GitHub Integrations</a>
+      {% else %}
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary">Start scanning free</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% include "partials/public_footer.html" %}
+
+<style>
+/* --- Step list --- */
+.doc-steps { display: flex; flex-direction: column; gap: 20px; margin: 28px 0 40px; }
+.doc-step {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: var(--bg-elevated); border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md); padding: 20px;
+}
+.doc-step-num {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-gradient); color: #fff; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.doc-step h3 { margin: 0 0 8px; font-size: 17px; color: var(--text-primary); font-family: var(--font-body, inherit); font-weight: 600; }
+.doc-step p { margin: 0; font-size: 15px; }
+
+/* --- FAQ accordion --- */
+.doc-faq { display: flex; flex-direction: column; gap: 10px; margin: 20px 0 40px; }
+.doc-faq-item { border: 1px solid var(--border-glass); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-elevated); }
+.doc-faq-q {
+  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+  padding: 16px 18px; font-size: 15.5px; font-weight: 600; color: var(--text-primary);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-family: inherit;
+}
+.doc-faq-icon { font-size: 20px; color: var(--text-muted); transition: transform 0.2s ease; flex-shrink: 0; }
+.doc-faq-item.open .doc-faq-icon { transform: rotate(45deg); }
+.doc-faq-a { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; padding: 0 18px; }
+.doc-faq-item.open .doc-faq-a { max-height: 240px; padding: 0 18px 16px; }
+.doc-faq-a p { margin: 0; font-size: 14.5px; color: var(--text-secondary); }
+
+/* --- CTA box --- */
+.doc-cta {
+  margin-top: 40px; padding: 32px; text-align: center;
+  background: var(--bg-elevated); border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  .editorial-hero { padding: 56px 0 36px; }
+  .editorial-hero h1 { font-size: 30px; }
+  .editorial-hero .editorial-dek { font-size: 16px; }
+  .doc-step { flex-direction: column; gap: 10px; padding: 16px; }
+  .doc-cta { padding: 24px 18px; }
+  .doc-faq-q { font-size: 14.5px; padding: 14px; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('[data-faq-toggle]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var item = btn.closest('.doc-faq-item');
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('[data-faq] .doc-faq-item').forEach(function (i) { i.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+});
+</script>
+{% endblock %}
