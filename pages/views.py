@@ -15,6 +15,10 @@ def terms_view(request):
     return render(request, 'pages/terms.html')
 
 
+def github_integration_docs_view(request):
+    return render(request, 'pages/github_integration_docs.html')
+
+
 @require_GET
 def robots_txt(request):
     lines = [
@@ -48,6 +52,7 @@ def sitemap_xml(request):
         (reverse('pages:about'), 'monthly', '0.7'),
         (reverse('pages:privacy'), 'yearly', '0.3'),
         (reverse('pages:terms'), 'yearly', '0.3'),
+        (reverse('pages:github_integration_docs'), 'monthly', '0.7'),
         (reverse('blog:list'), 'weekly', '0.8'),
     ]
 
