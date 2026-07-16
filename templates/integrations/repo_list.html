@@ -1,0 +1,126 @@
+{% extends "partials/app_base.html" %}
+{% block title %}GitHub Integrations — Fora AI{% endblock %}
+{% block app_content %}
+<div class="mb-24">
+  <h1 style="font-size: 26px;">🐙 GitHub Integrations</h1>
+  <p class="text-secondary mt-8">
+    Connect a repo and every push to its default branch is scanned automatically — no manual upload needed.
+  </p>
+</div>
+
+<div class="glass-card padded mb-24">
+  <h2 style="font-size: 17px;" class="mb-16">Connect a repo</h2>
+  <form method="post" action="{% url 'integrations:connect' %}">
+    {% csrf_token %}
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">{{ form.repo_full_name.label }}</label>
+        {{ form.repo_full_name }}
+        {% if form.repo_full_name.errors %}<div class="form-help" style="color:var(--accent-red,#f87171);">{{ form.repo_full_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">{{ form.access_token.label }}</label>
+        {{ form.access_token }}
+        <div class="form-help">{{ form.access_token.help_text }}</div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg mt-8" data-connect-btn>🔗 Connect repo</button>
+  </form>
+  <p class="text-muted mt-16" style="font-size:12.5px;">
+    Create a token at
+    <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener" class="text-gradient">github.com/settings/tokens</a>
+    with <code>repo</code> and <code>admin:repo_hook</code> scopes. Your token is stored only to read this repo and manage its webhook.
+  </p>
+</div>
+
+<div class="glass-card" data-repo-card-wrap>
+  {% if repos %}
+  <table class="data-table repo-table">
+    <thead>
+      <tr>
+        <th>Repo</th>
+        <th>Branch</th>
+        <th>Token</th>
+        <th>Last push scan</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for repo in repos %}
+      <tr>
+        <td data-label="Repo" style="font-weight:600;">
+          <a href="https://github.com/{{ repo.repo_full_name }}" target="_blank" rel="noopener">{{ repo.repo_full_name }}</a>
+        </td>
+        <td data-label="Branch"><span class="tag-pill">{{ repo.default_branch }}</span></td>
+        <td data-label="Token" class="text-muted" style="font-family:monospace;">{{ repo.masked_token }}</td>
+        <td data-label="Last push scan">
+          {% if repo.last_scan %}
+            <a href="{% url 'reports:detail' repo.last_scan.id %}" class="text-gradient">View report</a>
+            <div class="text-muted" style="font-size:12px;">{{ repo.last_synced_at|date:"M d, Y H:i" }}</div>
+          {% else %}
+            <span class="text-muted">No pushes scanned yet</span>
+          {% endif %}
+        </td>
+        <td data-label="Status">
+          {% if repo.is_active %}<span class="badge badge-good">Active</span>{% else %}<span class="badge badge-medium">Paused</span>{% endif %}
+        </td>
+        <td data-label="">
+          <form method="post" action="{% url 'integrations:disconnect' repo.id %}" onsubmit="return confirm('Disconnect {{ repo.repo_full_name }}? The webhook will be removed from GitHub.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary btn-sm btn-block">Disconnect</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🐙</div>
+      <p>No repos connected yet.</p>
+      <p class="text-muted" style="font-size:13px;">Connect one above to enable scan-on-push.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+/* --- Repo table: collapses into stacked cards on narrow screens --- */
+@media (max-width: 700px) {
+  [data-repo-card-wrap] { overflow-x: visible; padding: 12px; }
+  .repo-table, .repo-table tbody, .repo-table tr, .repo-table td { display: block; width: 100%; }
+  .repo-table thead { display: none; }
+  .repo-table tr {
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .repo-table tr:last-child { margin-bottom: 0; }
+  .repo-table td {
+    border-bottom: none;
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: right;
+  }
+  .repo-table td[data-label]:not([data-label=""])::before {
+    content: attr(data-label);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-align: left;
+  }
+  .repo-table td[data-label="Last push scan"] { flex-direction: column; align-items: flex-end; }
+  .repo-table td[data-label=""] { padding-top: 12px; }
+}
+
+@media (max-width: 480px) {
+  [data-connect-btn] { width: 100%; }
+}
+</style>
+{% endblock %}
