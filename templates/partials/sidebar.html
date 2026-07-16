@@ -22,6 +22,9 @@
   <a href="{% url 'reports:history' %}" class="sidebar-link {% if request.resolver_match.app_name == 'reports' %}active{% endif %}">
     <span>📄</span> Scan History
   </a>
+  <a href="{% url 'integrations:list' %}" class="sidebar-link {% if request.resolver_match.app_name == 'integrations' %}active{% endif %}">
+    <span>🐙</span> GitHub Integrations
+  </a>
   <a href="{% url 'subscriptions:pricing' %}" class="sidebar-link {% if request.resolver_match.app_name == 'subscriptions' %}active{% endif %}">
     <span>💳</span> Subscription
   </a>
