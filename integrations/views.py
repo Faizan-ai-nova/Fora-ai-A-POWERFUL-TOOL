@@ -66,6 +66,11 @@ def connect_repo_view(request):
     )
 
     callback_url = request.build_absolute_uri(reverse('integrations:webhook', args=[repo.id]))
+    # Force https for the public callback: GitHub's webhook delivery does not follow
+    # redirects, and DEBUG=True (or a misconfigured proxy header) can cause Django to
+    # think a Railway request came in over plain http, producing a URL that 301s.
+    if callback_url.startswith('http://') and request.get_host() not in ('127.0.0.1:8000', 'localhost:8000'):
+        callback_url = 'https://' + callback_url[len('http://'):]
 
     try:
         webhook_id = github_client.create_webhook(token, full_name, callback_url, repo.webhook_secret)
