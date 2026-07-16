@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'subscriptions',
     'payments',
     'reports',
+    'integrations',
     'pages',
     'blog',
 ]
