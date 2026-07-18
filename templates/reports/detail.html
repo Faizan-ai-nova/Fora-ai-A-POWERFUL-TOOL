@@ -129,4 +129,46 @@
   <p><b>No issues found! This code looks clean</b><i>i'd recommend using the Pro plan—it catches even the tiny, easy-to-miss bugs that often slip through. if you are using please ignore this message</i></p>
 </div>
 {% endif %}
+
+{% if scan.status == 'completed' %}
+<div class="glass-card padded mt-24" style="max-width: 100%;">
+  <div class="flex-between" style="flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin:0;">Share your score</h3>
+      <p class="text-secondary mt-8" style="font-size:13.5px; max-width: 480px;">
+        Embed a live badge in your GitHub README or website. Updates automatically if you re-scan.
+      </p>
+    </div>
+    <form method="post" action="{% url 'scanner:toggle_badge' scan.id %}" style="flex-shrink:0;">
+      {% csrf_token %}
+      <button type="submit" class="btn {% if scan.is_public_badge %}btn-secondary{% else %}btn-primary{% endif %} btn-sm">
+        {% if scan.is_public_badge %}Turn off sharing{% else %}Enable badge sharing{% endif %}
+      </button>
+    </form>
+  </div>
+
+  {% if scan.is_public_badge %}
+    {% url 'scanner:badge' scan.id as badge_path %}
+    <div class="mt-16" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+      <img src="{{ badge_path }}" alt="Fora AI security score: {{ scan.security_score }}/100 (Grade {{ scan.score_grade }})" width="0" height="20" style="height:20px; width:auto; max-width:100%;">
+    </div>
+
+    <div class="mt-16">
+      <div class="flex-between mb-8" style="flex-wrap:wrap; gap:8px;">
+        <span class="text-muted" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Markdown (GitHub README)</span>
+        <button type="button" class="btn btn-ghost btn-sm" data-copy="#badge-markdown">Copy</button>
+      </div>
+      <pre id="badge-markdown" class="mono glass-card padded" style="font-size:12.5px; overflow-x:auto; word-break:break-all; white-space:pre-wrap;">[![Fora AI security score]({{ request.scheme }}://{{ request.get_host }}{{ badge_path }})]({{ request.scheme }}://{{ request.get_host }}{% url 'landing' %})</pre>
+    </div>
+
+    <div class="mt-16">
+      <div class="flex-between mb-8" style="flex-wrap:wrap; gap:8px;">
+        <span class="text-muted" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">HTML (website)</span>
+        <button type="button" class="btn btn-ghost btn-sm" data-copy="#badge-html">Copy</button>
+      </div>
+      <pre id="badge-html" class="mono glass-card padded" style="font-size:12.5px; overflow-x:auto; word-break:break-all; white-space:pre-wrap;">&lt;a href="{{ request.scheme }}://{{ request.get_host }}{% url 'landing' %}"&gt;&lt;img src="{{ request.scheme }}://{{ request.get_host }}{{ badge_path }}" alt="Fora AI security score: {{ scan.security_score }}/100" /&gt;&lt;/a&gt;</pre>
+    </div>
+  {% endif %}
+</div>
+{% endif %}
 {% endblock %}
