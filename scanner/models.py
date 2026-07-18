@@ -31,6 +31,12 @@ class Scan(models.Model):
 
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
 
+    # Opt-in toggle: when True, /scanner/badge/<id>.svg is publicly viewable
+    # (no login required) so the score can be embedded in a GitHub README or
+    # website. Off by default — a scan's score shouldn't be discoverable by
+    # anyone who guesses/finds the UUID unless the owner explicitly shares it.
+    is_public_badge = models.BooleanField(default=False)
+
     # Results summary (denormalized for fast dashboard queries)
     security_score = models.PositiveSmallIntegerField(default=100)
     total_issues = models.PositiveIntegerField(default=0)
