@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.conf import settings
 
 from .forms import PasteCodeForm, FileUploadForm, ZipUploadForm
@@ -9,6 +11,7 @@ from .models import Scan, ScannedFile, Issue
 from .engine.analyzer import analyze_single_file, compute_security_score
 from .engine.zip_handler import extract_scannable_files, ZipSecurityError
 from .engine.providers import get_provider
+from .badge import render_score_badge_svg, render_unavailable_badge_svg
 
 
 def _guard_scan_quota(request):
@@ -222,4 +225,42 @@ def scan_zip_view(request):
 
     request.user.consume_scan()
     messages.success(request, f'Scan complete! Analyzed {len(files)} files.')
+    return redirect('reports:detail', scan_id=scan.id)
+
+
+def badge_view(request, scan_id):
+    """
+    Public SVG badge for a scan's security score - no login required.
+    Only renders real data if the scan owner has explicitly opted in via
+    `is_public_badge`; otherwise shows a neutral "unavailable" badge instead
+    of a 404, so an embedded badge never renders visibly broken on someone's
+    README once sharing is later turned off.
+    """
+    scan = Scan.objects.filter(id=scan_id, is_public_badge=True, status=Scan.Status.COMPLETED).first()
+
+    if scan is None:
+        svg = render_unavailable_badge_svg()
+    else:
+        svg = render_score_badge_svg(scan.security_score, scan.score_grade)
+
+    response = HttpResponse(svg, content_type='image/svg+xml')
+    # Short cache so an updated score (re-scan) shows up reasonably quickly
+    # in READMEs/websites without hammering the server on every page view.
+    response['Cache-Control'] = 'public, max-age=1800'
+    return response
+
+
+@login_required
+@require_POST
+def toggle_badge_view(request, scan_id):
+    """Owner-only: flips whether this scan's badge is publicly embeddable."""
+    scan = get_object_or_404(Scan, id=scan_id, user=request.user)
+    scan.is_public_badge = not scan.is_public_badge
+    scan.save(update_fields=['is_public_badge'])
+
+    if scan.is_public_badge:
+        messages.success(request, 'Badge sharing turned on — the embed snippet below is now live.')
+    else:
+        messages.info(request, 'Badge sharing turned off.')
+
     return redirect('reports:detail', scan_id=scan.id)
