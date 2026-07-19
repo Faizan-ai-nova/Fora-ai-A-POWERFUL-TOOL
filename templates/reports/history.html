@@ -11,7 +11,34 @@
 
 <div class="glass-card" style="overflow-x:auto;">
   {% if page_obj.object_list %}
-  <table class="data-table">
+  <table class="data-table" data-skeleton-loader="scan-history">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Type</th>
+        <th>Language</th>
+        <th>Score</th>
+        <th>Issues</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in "12345" %}
+      <tr class="skeleton-table-row">
+        <td><div class="skeleton skeleton-line w-80" style="margin:0;"></div></td>
+        <td><div class="skeleton skeleton-pill" style="width:70px; height:20px;"></div></td>
+        <td><div class="skeleton skeleton-line w-60" style="margin:0;"></div></td>
+        <td><div class="skeleton skeleton-pill" style="width:60px; height:20px;"></div></td>
+        <td><div class="skeleton skeleton-line w-40" style="margin:0;"></div></td>
+        <td><div class="skeleton skeleton-line w-60" style="margin:0;"></div></td>
+        <td><div class="skeleton skeleton-block" style="width:90px; height:28px;"></div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table class="data-table sk-hidden" data-skeleton-target="scan-history">
     <thead>
       <tr>
         <th>Project</th>
