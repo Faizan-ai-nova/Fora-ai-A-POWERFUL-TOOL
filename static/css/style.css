@@ -19,7 +19,7 @@
   --accent-cyan: #38d4c4;
   --accent-gradient: linear-gradient(135deg, #f0c368 0%, #e0a83e 55%, #c98a2e 100%);
   --accent-gradient-soft: rgba(224, 168, 62, 0.14);
-  --accent-glow: rgba(224, 168, 62, 0.35);
+  --accent-glow: rgba(224, 168, 62, 0.55);
 
   --danger: #f43f5e;
   --danger-soft: rgba(244, 63, 94, 0.12);
@@ -86,16 +86,16 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background-image:
-    radial-gradient(600px circle at 12% -10%, var(--accent-glow), transparent 60%),
-    radial-gradient(500px circle at 100% 20%, rgba(56, 212, 196, 0.10), transparent 55%),
-    linear-gradient(var(--border-glass) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border-glass) 1px, transparent 1px);
+    radial-gradient(900px circle at 15% -5%, var(--accent-glow), transparent 65%),
+    radial-gradient(700px circle at 100% 15%, rgba(56, 212, 196, 0.22), transparent 60%),
+    linear-gradient(var(--border-glass-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-glass-strong) 1px, transparent 1px);
   background-size: auto, auto, 44px 44px, 44px 44px;
-  opacity: 0.5;
-  mask-image: linear-gradient(to bottom, black, transparent 85%);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%);
+  opacity: 1;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 90%);
 }
-body[data-theme="light"]::before { opacity: 0.35; }
+body[data-theme="light"]::before { opacity: 0.6; }
 
 /* Keep every real page section above the fixed ambient background layer.
    (Fixed z-index:0 elements paint after plain static content per spec,
@@ -679,3 +679,104 @@ body.editorial { background: var(--bg-primary); }
   .skeleton-ring { width: 120px; height: 120px; }
   .skeleton-stat-card { height: 96px; padding: 16px; }
 }
+
+/* =========================================================================
+   LANDING V2 — long-scroll marketing layout (language pills, icon-tile
+   feature grid, connected step flow, testimonial cards, FAQ accordion).
+   ========================================================================= */
+
+/* Language / capability pill row under the hero */
+.lang-pill-row {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  margin: 28px 0;
+}
+.lang-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 999px;
+  background: var(--bg-elevated); border: 1px solid var(--border-glass);
+  font-size: 13.5px; font-weight: 600; color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+.lang-pill.active {
+  color: #12100a; background: var(--accent-gradient); border-color: transparent;
+}
+
+/* Feature grid with real icon tiles (replaces plain mono-text tags) */
+.feature-grid-v2 {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+}
+@media (max-width: 900px) { .feature-grid-v2 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .feature-grid-v2 { grid-template-columns: 1fr; } }
+
+.feature-tile { padding: 28px; text-align: left; }
+.feature-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-gradient-soft); color: var(--accent-indigo);
+  margin-bottom: 18px;
+}
+.feature-icon svg { width: 24px; height: 24px; }
+.feature-tile h3 { font-size: 17px; margin-bottom: 8px; }
+.feature-tile p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+/* Step flow with connecting line (desktop) */
+.step-flow {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  position: relative;
+}
+@media (max-width: 800px) { .step-flow { grid-template-columns: 1fr; } }
+.step-flow::before {
+  content: ''; position: absolute; top: 28px; left: 12%; right: 12%;
+  height: 2px; background: var(--border-glass-strong); z-index: 0;
+}
+@media (max-width: 800px) { .step-flow::before { display: none; } }
+.step-tile { position: relative; z-index: 1; text-align: center; padding: 0 8px; }
+.step-num {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 18px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-elevated); border: 2px solid var(--border-glass-strong);
+  font-family: var(--font-display); font-weight: 700; font-size: 20px;
+  color: var(--accent-indigo);
+}
+.step-tile h3 { font-size: 16px; margin-bottom: 8px; }
+.step-tile p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+/* Testimonial cards */
+.testimonial-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+}
+@media (max-width: 900px) { .testimonial-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .testimonial-grid { grid-template-columns: 1fr; } }
+.testimonial-card { padding: 24px; }
+.testimonial-quote { font-size: 14.5px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 18px; }
+.testimonial-quote::before { content: '\201C'; color: var(--accent-indigo); font-size: 24px; font-family: var(--font-display); }
+.testimonial-person { display: flex; align-items: center; gap: 10px; }
+.testimonial-avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent-gradient); display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #12100a;
+}
+.testimonial-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
+.testimonial-role { font-size: 12.5px; color: var(--text-muted); }
+
+/* FAQ accordion */
+.faq-list { max-width: 760px; margin: 0 auto; }
+.faq-item {
+  border-bottom: 1px solid var(--border-glass);
+}
+.faq-question {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; background: none; border: none; cursor: pointer;
+  padding: 20px 4px; text-align: left; font-family: var(--font-body);
+  font-size: 15.5px; font-weight: 600; color: var(--text-primary);
+}
+.faq-question .faq-chevron {
+  flex-shrink: 0; margin-left: 16px; transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
+.faq-item.open .faq-question .faq-chevron { transform: rotate(180deg); color: var(--accent-indigo); }
+.faq-answer {
+  max-height: 0; overflow: hidden; transition: max-height 0.25s ease;
+}
+.faq-item.open .faq-answer { max-height: 240px; }
+.faq-answer-inner { padding: 0 4px 20px; font-size: 14.5px; line-height: 1.7; color: var(--text-secondary); }
