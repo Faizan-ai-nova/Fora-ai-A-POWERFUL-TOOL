@@ -4,8 +4,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.http import HttpResponse
 
 from pages.views import robots_txt, sitemap_xml
+def ads_txt(request):
+    content = "google.com, pub-8724042466038280, DIRECT, f08c47fec0942fa0"
+    return HttpResponse(content, content_type="text/plain")
 
 urlpatterns = [
     path('foraoops8082572326@09/', admin.site.urls),
@@ -21,7 +25,8 @@ urlpatterns = [
     path('', include('pages.urls')),
     path('robots.txt', robots_txt, name='robots_txt'),
     path('sitemap.xml', sitemap_xml, name='sitemap_xml'),
-     path('integrations/', include('integrations.urls')),
+    path('integrations/', include('integrations.urls')),
+    path('ads.txt', ads_txt),
 ]
 
 if settings.DEBUG:
