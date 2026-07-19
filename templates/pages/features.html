@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}Fora AI Product Deep-Dive — Every Feature Explained{% endblock %}
+{% block meta_description %}A full walkthrough of what Fora AI checks, how the scan works end-to-end, who it's built for, and why teams use it before every push.{% endblock %}
+{% block og_title %}Fora AI Product Deep-Dive{% endblock %}
+{% block og_description %}Every detection category, every workflow, every report — see exactly what Fora AI does before you connect a repo.{% endblock %}
+
+{% block content %}
+{% include "partials/public_nav.html" %}
+
+<section style="padding: clamp(48px,10vw,90px) clamp(20px,5vw,40px) 60px;">
+  <div class="container" style="max-width: 1080px;">
+    <div style="text-align:center; max-width: 720px; margin: 0 auto 40px;">
+      <span class="tag-pill mono mb-16" style="display:inline-block;">$ product · deep dive</span>
+      <h1 style="font-size: clamp(30px,6vw,46px); line-height: 1.15; margin: 20px 0;">
+        Everything Fora AI checks, <span class="text-gradient">explained end-to-end.</span>
+      </h1>
+      <p class="text-secondary" style="font-size: clamp(15.5px,3.5vw,18px); line-height: 1.6;">
+        From the first line you paste to the badge on your README — here's exactly what
+        happens during a scan, what gets flagged, and why it's built this way.
+      </p>
+      <div class="lang-pill-row">
+        <span class="lang-pill active">Python</span>
+        <span class="lang-pill">Django</span>
+        <span class="lang-pill">JavaScript</span>
+        <span class="lang-pill">HTML</span>
+        <span class="lang-pill">CSS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 20px clamp(20px,5vw,40px) 60px;">
+  <div class="container">
+    <div class="feature-grid-v2">
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
+        </div>
+        <h3>Instant Results</h3>
+        <p>Paste a snippet or drop a whole project — the scan engine runs in seconds, not minutes, so it fits into your normal workflow instead of interrupting it.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <h3>Full-Project Coverage</h3>
+        <p>A single file or an entire ZIP — every file is scanned in one pass, and results roll up into one score instead of scattered per-file reports.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.8 8.7 9 10 5.2-1.3 9-5 9-10V6l-9-4Z"/><path d="m9.5 12.5 2 2 4-4"/></svg>
+        </div>
+        <h3>Why It Matters</h3>
+        <p>Most security bugs — a missing CSRF token, a raw string-built query — look completely harmless until they're exploited. Fora AI catches them before that happens.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 40px clamp(20px,5vw,40px) 60px;">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px);">A closer look at the scan</h2>
+    <p class="text-secondary" style="text-align:center; max-width: 560px; margin: 12px auto 48px;">
+      Six things that happen behind the scenes on every single scan.
+    </p>
+    <div class="feature-grid-v2">
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></svg>
+        </div>
+        <h3>Multi-Language Parsing</h3>
+        <p>Python, Django, JavaScript, HTML, and CSS are each parsed with their own rule set — no generic one-size-fits-all pattern matching.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        </div>
+        <h3>Three Ways to Submit Code</h3>
+        <p>Paste code directly, upload a single file, or drop a ZIP of your whole Django project — whichever fits what you're working on right now.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11 3 6l6-5"/><path d="M3 6h13a5 5 0 0 1 5 5v1"/></svg>
+        </div>
+        <h3>One-Click Scanning</h3>
+        <p>No config file, no CLI to install, no CI setup required to try it — click Scan and the report is ready in the same page.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <h3>Severity-Ranked Results</h3>
+        <p>Every issue is scored Critical through Info and rolled into a single 0–100 security score with a letter grade, so you know what to fix first.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        </div>
+        <h3>PDF &amp; Badge Export</h3>
+        <p>Export a clean PDF report for a client or teammate, or turn your score into a live badge you can drop straight into your GitHub README.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </div>
+        <h3>OWASP &amp; CWE Mapping</h3>
+        <p>Every finding links back to an OWASP Top 10 category, with CWE references on Pro, so issues map cleanly to standards your team already tracks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 40px clamp(20px,5vw,40px) 60px;">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 48px;">From first scan to every push</h2>
+    <div class="step-flow">
+      <div class="step-tile">
+        <div class="step-num">1</div>
+        <h3>Run a manual scan</h3>
+        <p>Paste code, upload a file, or drop a ZIP — get your first security score in seconds, no account setup required to try it.</p>
+      </div>
+      <div class="step-tile">
+        <div class="step-num">2</div>
+        <h3>Fix what's flagged</h3>
+        <p>Each issue comes with a plain-language explanation, why it's dangerous, and a secure code example you can drop straight in.</p>
+      </div>
+      <div class="step-tile">
+        <div class="step-num">3</div>
+        <h3>Connect GitHub for scan-on-push</h3>
+        <p>Link a repo once and every push to the default branch is scanned automatically — no CI file, no GitHub App to install.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 40px clamp(20px,5vw,40px) 60px;">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px);">Who Fora AI is built for</h2>
+    <p class="text-secondary" style="text-align:center; max-width: 560px; margin: 12px auto 48px;">
+      The scan logic doesn't change — but what you get out of it depends on what you're doing.
+    </p>
+    <div class="feature-grid-v2">
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">🧑‍💻</div>
+        <h3>Solo &amp; Indie Developers</h3>
+        <p>Run a scan before every deploy so a SQL injection or leaked API key never makes it to production in the first place.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">🧵</div>
+        <h3>Freelancers</h3>
+        <p>Attach a clean security score to client handoffs — a concrete, shareable signal that the code you delivered was checked.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">🧑‍🏫</div>
+        <h3>Students &amp; Learners</h3>
+        <p>See exactly which line triggered a finding and why, so secure coding habits form early instead of after a real incident.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">🧑‍🤝‍🧑</div>
+        <h3>Team Leads</h3>
+        <p>Track average score and open critical/high issues across the whole team's scan history from one dashboard.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">📦</div>
+        <h3>Open-Source Maintainers</h3>
+        <p>Scan-on-push means every merged contribution gets checked automatically, without asking contributors to run anything extra.</p>
+      </div>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">🎓</div>
+        <h3>Instructors</h3>
+        <p>Review a class's submitted projects against the same standard, with reports that explain the "why" behind every flag.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 40px clamp(20px,5vw,40px) 60px;">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 48px;">What developers say</h2>
+    <div class="testimonial-grid">
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">The severity breakdown alone changed how our team prioritizes fixes — critical issues stopped getting buried in a long list.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">P</div>
+          <div><div class="testimonial-name">Priya</div><div class="testimonial-role">Team Lead</div></div>
+        </div>
+      </div>
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">Scan-on-push means I genuinely forget it's running until a red badge shows up in a PR. That's exactly what I wanted.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">K</div>
+          <div><div class="testimonial-name">Karan</div><div class="testimonial-role">Open-Source Maintainer</div></div>
+        </div>
+      </div>
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">I add the badge to every client README now — it's become part of how I hand off projects.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">N</div>
+          <div><div class="testimonial-name">Neha</div><div class="testimonial-role">Freelance Developer</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 40px clamp(20px,5vw,40px) 100px;">
+  <div class="container-narrow">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 40px;">Frequently asked questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          Does Fora AI store or share my code?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Your code is scanned to generate your report and scan history, and is never shared with third parties or used to train models.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          What's the difference between Free and Pro?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Free includes 10 lifetime scans with full OWASP Top 10 detection. Pro adds unlimited scans, CWE mapping, AI-enhanced analysis, and PDF export — see the <a href="{% url 'subscriptions:pricing' %}" class="text-gradient">pricing page</a> for the full comparison.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          How does scan-on-push work?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Connect a repo with a personal access token and every push to the default branch is scanned automatically — see the <a href="{% url 'pages:github_integration_docs' %}" class="text-gradient">GitHub integration guide</a> for setup steps.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          Can I share my security score publicly?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes — turn on badge sharing from any completed scan to get a live badge and embed snippet for your README or site.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 0 clamp(20px,5vw,40px) 100px;">
+  <div class="container-narrow">
+    <div class="glass-card padded" style="text-align:center; padding: clamp(32px,8vw,56px) clamp(20px,6vw,32px);">
+      <h2 style="font-size: clamp(22px,5vw,30px);">See your first security score in seconds.</h2>
+      <p class="text-secondary mt-8">No credit card. No commitment. 10 free scans on signup.</p>
+      <a href="{% url 'accounts:register' %}" class="btn btn-primary btn-lg mt-24">Create your free account</a>
+    </div>
+  </div>
+</section>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}
