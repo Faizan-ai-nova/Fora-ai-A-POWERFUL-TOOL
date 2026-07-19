@@ -1,0 +1,66 @@
+{
+  "name": "Fora AI — AI-Powered Security Scanner",
+  "short_name": "Fora AI",
+  "description": "Find security vulnerabilities in your code before attackers do. AI-powered static analysis for Python, Django, JavaScript, HTML and CSS — instant security score, OWASP Top 10 mapping, and a fix for every issue.",
+  "id": "/",
+  "start_url": "/dashboard/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#e0d3c0",
+  "theme_color": "#0a0d13",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["developer", "productivity", "security"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/static/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Scan",
+      "short_name": "New Scan",
+      "description": "Scan code, a file, or a ZIP project for vulnerabilities",
+      "url": "/scanner/new/?utm_source=pwa_shortcut",
+      "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your scans and security score",
+      "url": "/dashboard/?utm_source=pwa_shortcut",
+      "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Scan History",
+      "short_name": "History",
+      "description": "Browse all past scan reports",
+      "url": "/reports/?utm_source=pwa_shortcut",
+      "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
