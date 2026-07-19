@@ -10,6 +10,10 @@ def about_view(request):
     return render(request, 'pages/about.html')
 
 
+def features_view(request):
+    return render(request, 'pages/features.html')
+
+
 def privacy_view(request):
     return render(request, 'pages/privacy.html')
 
@@ -59,6 +63,7 @@ def sitemap_xml(request):
         (reverse('landing'), 'weekly', '1.0'),
         (reverse('subscriptions:pricing'), 'weekly', '0.9'),
         (reverse('pages:about'), 'monthly', '0.7'),
+        (reverse('pages:features'), 'monthly', '0.8'),
         (reverse('pages:privacy'), 'yearly', '0.3'),
         (reverse('pages:terms'), 'yearly', '0.3'),
         (reverse('pages:github_integration_docs'), 'monthly', '0.7'),
