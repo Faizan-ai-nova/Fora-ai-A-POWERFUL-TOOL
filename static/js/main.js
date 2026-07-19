@@ -29,6 +29,16 @@ function showToast(message, type = 'info') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // ---------- FAQ accordion (landing page) ----------
+  document.querySelectorAll('[data-faq-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const wasOpen = item.classList.contains('open');
+      item.parentElement.querySelectorAll('.faq-item.open').forEach((el) => el.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
   // Render Django messages as toasts
   document.querySelectorAll('[data-django-message]').forEach((el) => {
     showToast(el.dataset.message, el.dataset.tag);
