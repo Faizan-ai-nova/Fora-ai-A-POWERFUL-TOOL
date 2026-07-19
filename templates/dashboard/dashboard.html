@@ -9,7 +9,17 @@
   <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary">+ New Scan</a>
 </div>
 
-<div class="stat-grid mb-24">
+<div class="stat-grid mb-24" data-skeleton-loader="dashboard-stats">
+  {% for i in "1234" %}
+  <div class="glass-card skeleton skeleton-stat-card">
+    <div class="skeleton-circle skeleton-block" style="width:22px; height:22px;"></div>
+    <div class="skeleton-line sm w-60"></div>
+    <div class="skeleton-line lg w-40" style="margin-bottom:0;"></div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="stat-grid mb-24 sk-hidden" data-skeleton-target="dashboard-stats">
   <div class="glass-card stat-card">
     <div class="stat-icon">🔍</div>
     <div class="stat-label">Scans Remaining</div>
@@ -40,6 +50,19 @@
       <h3 style="font-size:16px;">Recent scans</h3>
       <a href="{% url 'reports:history' %}" class="text-secondary" style="font-size:13.5px;">View all →</a>
     </div>
+    <div data-skeleton-loader="recent-scans">
+      {% for i in "123" %}
+      <div class="skeleton-row">
+        <div class="skeleton-row-main">
+          <div class="skeleton skeleton-line w-60" style="margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-line sm w-40" style="margin-bottom:0;"></div>
+        </div>
+        <div class="skeleton skeleton-pill" style="width:56px; height:22px;"></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="sk-hidden" data-skeleton-target="recent-scans">
     {% if recent_scans %}
       {% for scan in recent_scans %}
         <a href="{% url 'reports:detail' scan.id %}" class="flex-between" style="padding: 12px 0; border-bottom: 1px solid var(--border-glass); display:flex;">
@@ -57,10 +80,21 @@
         <a href="{% url 'scanner:new_scan' %}" class="btn btn-primary mt-16">Start a scan</a>
       </div>
     {% endif %}
+    </div>
   </div>
 
   <div class="glass-card padded">
     <h3 style="font-size:16px; margin-bottom:16px;">Subscription</h3>
+
+    <div data-skeleton-loader="subscription-card">
+      <div class="skeleton skeleton-line w-40" style="margin-bottom:16px;"></div>
+      <div class="skeleton skeleton-line w-60" style="margin-bottom:16px;"></div>
+      <hr class="divider">
+      <div class="skeleton skeleton-line w-100"></div>
+      <div class="skeleton skeleton-line w-80"></div>
+    </div>
+
+    <div class="sk-hidden" data-skeleton-target="subscription-card">
     <div class="flex-between mb-16">
       <span class="text-secondary" style="font-size:14px;">Current plan</span>
       <span class="tag-pill">{{ active_subscription.plan.name|default:"Free" }}</span>
@@ -76,6 +110,7 @@
       <p class="text-secondary" style="font-size:14px;">You're on the free plan with {{ scans_remaining }} scan{{ scans_remaining|pluralize }} left.</p>
       <a href="{% url 'subscriptions:pricing' %}" class="btn btn-primary btn-block mt-16">Upgrade for unlimited scans</a>
     {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}
