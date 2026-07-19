@@ -1,6 +1,9 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 
 def about_view(request):
@@ -17,6 +20,12 @@ def terms_view(request):
 
 def github_integration_docs_view(request):
     return render(request, 'pages/github_integration_docs.html')
+
+
+def offline_view(request):
+    """Standalone offline fallback page, served by the service worker when
+    the network is unavailable and the requested page isn't cached."""
+    return render(request, 'offline.html')
 
 
 @require_GET
@@ -74,3 +83,24 @@ def sitemap_xml(request):
         '</urlset>'
     )
     return HttpResponse(xml, content_type='application/xml')
+
+
+@require_GET
+def service_worker_view(request):
+    """
+    Serves /service-worker.js from the site ROOT (not /static/), which is
+    required for its scope to cover the whole app rather than just /static/.
+    Reads straight from the source static dir so this works identically in
+    development and after collectstatic/Whitenoise in production.
+    """
+    sw_path = Path(settings.BASE_DIR) / 'static' / 'js' / 'service-worker.js'
+    if not sw_path.exists():
+        raise Http404('service-worker.js not found')
+
+    with open(sw_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    response = HttpResponse(content, content_type='application/javascript')
+    response['Service-Worker-Allowed'] = '/'
+    response['Cache-Control'] = 'no-cache'
+    return response
