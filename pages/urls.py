@@ -8,4 +8,5 @@ urlpatterns = [
     path('privacy/', views.privacy_view, name='privacy'),
     path('terms/', views.terms_view, name='terms'),
      path('docs/github-integration/', views.github_integration_docs_view, name='github_integration_docs'),
+     path('offline/', views.offline_view, name='offline'),
 ]
