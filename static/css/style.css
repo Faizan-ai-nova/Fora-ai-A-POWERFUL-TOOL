@@ -16,9 +16,10 @@
   --border-glass-strong: rgba(255, 255, 255, 0.16);
 
   --accent-indigo: #e0a83e;
-  --accent-cyan: #e0a83e;
-  --accent-gradient: #e0a83e;
+  --accent-cyan: #38d4c4;
+  --accent-gradient: linear-gradient(135deg, #f0c368 0%, #e0a83e 55%, #c98a2e 100%);
   --accent-gradient-soft: rgba(224, 168, 62, 0.14);
+  --accent-glow: rgba(224, 168, 62, 0.35);
 
   --danger: #f43f5e;
   --danger-soft: rgba(244, 63, 94, 0.12);
@@ -75,6 +76,32 @@ body {
   overflow-x: hidden;
 }
 
+/* Ambient depth layer — faint grid + two soft glows so the dark theme
+   doesn't read as a flat, single-tone background. Fixed + behind content,
+   never intercepts clicks. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(600px circle at 12% -10%, var(--accent-glow), transparent 60%),
+    radial-gradient(500px circle at 100% 20%, rgba(56, 212, 196, 0.10), transparent 55%),
+    linear-gradient(var(--border-glass) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-glass) 1px, transparent 1px);
+  background-size: auto, auto, 44px 44px, 44px 44px;
+  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+body[data-theme="light"]::before { opacity: 0.35; }
+
+/* Keep every real page section above the fixed ambient background layer.
+   (Fixed z-index:0 elements paint after plain static content per spec,
+   so without this the texture layer would sit on top of page content.) */
+body > * { position: relative; z-index: 1; }
+
 
 
 h1, h2, h3, h4, h5, .font-display {
@@ -110,12 +137,17 @@ code, pre, .mono { font-family: var(--font-mono); }
 
 /* --- Card --- */
 .glass-card {
-  background: var(--bg-elevated);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
-  transition: border-color 0.2s ease;
+  box-shadow: var(--shadow-glass);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-.glass-card:hover { border-color: var(--border-glass-strong); }
+.glass-card:hover {
+  border-color: var(--border-glass-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
 .glass-card.padded { padding: 28px; }
 
 /* --- Buttons --- */
@@ -139,8 +171,12 @@ code, pre, .mono { font-family: var(--font-mono); }
 .btn-primary {
   background: var(--accent-gradient);
   color: #12100a;
+  box-shadow: 0 4px 18px var(--accent-glow);
 }
-.btn-primary:hover { background: #ecb658; }
+.btn-primary:hover {
+  box-shadow: 0 6px 24px var(--accent-glow);
+  transform: translateY(-1px);
+}
 
 .btn-secondary {
   background: var(--bg-elevated);
@@ -453,7 +489,13 @@ code, pre, .mono { font-family: var(--font-mono); }
 /* --- Utility --- */
 .text-muted { color: var(--text-muted); }
 .text-secondary { color: var(--text-secondary); }
-.text-gradient { color: var(--accent-gradient); }
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--accent-indigo); /* fallback for browsers without bg-clip:text */
+}
 .flex { display: flex; }
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
 .flex-col { display: flex; flex-direction: column; }
