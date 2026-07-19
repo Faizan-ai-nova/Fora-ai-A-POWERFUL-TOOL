@@ -136,6 +136,55 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ---------- Skeleton loading (reveal real content once it's ready) ----------
+  // Pattern: [data-skeleton-loader="x"] is the shimmer placeholder, shown by
+  // default. [data-skeleton-target="x"] is the real content, marked
+  // .sk-hidden in the template. We swap them once the page has settled.
+  const skeletonTargets = document.querySelectorAll('[data-skeleton-target]');
+  if (skeletonTargets.length) {
+    const reveal = () => {
+      skeletonTargets.forEach((target) => {
+        const key = target.dataset.skeletonTarget;
+        const loader = document.querySelector(`[data-skeleton-loader="${key}"]`);
+        target.classList.remove('sk-hidden');
+        loader?.classList.add('sk-hidden');
+      });
+    };
+    // Small delay so the shimmer reads as an intentional loading state
+    // rather than a flicker, but never make the user wait for it.
+    const minDelay = () => setTimeout(reveal, 260);
+    if (document.readyState === 'complete') {
+      minDelay();
+    } else {
+      window.addEventListener('load', minDelay);
+    }
+    // Safety net: guarantee content appears even if 'load' is delayed
+    // (slow fonts/analytics scripts) or main.js re-runs unexpectedly.
+    setTimeout(reveal, 1200);
+  }
+
+  // ---------- Top nav-progress bar (page navigation) ----------
+  const navProgress = document.getElementById('nav-progress');
+  if (navProgress) {
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('a[href]');
+      if (!link) return;
+      const url = new URL(link.href, window.location.href);
+      const isSamePage = url.pathname === window.location.pathname && url.hash;
+      if (
+        isSamePage ||
+        link.target === '_blank' ||
+        link.hasAttribute('download') ||
+        url.origin !== window.location.origin ||
+        e.metaKey || e.ctrlKey || e.shiftKey
+      ) {
+        return;
+      }
+      navProgress.classList.add('nav-active');
+    });
+    window.addEventListener('pageshow', () => navProgress.classList.remove('nav-active'));
+  }
+
   // ---------- Accordion (issue cards) ----------
   document.querySelectorAll('[data-accordion-toggle]').forEach((toggle) => {
     toggle.addEventListener('click', () => {
