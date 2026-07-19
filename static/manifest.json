@@ -62,5 +62,42 @@
       "url": "/reports/?utm_source=pwa_shortcut",
       "icons": [{ "src": "/static/icons/icon-192.png", "sizes": "192x192" }]
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/screenshots/wide-dashboard.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard — scan stats, recent scans, and subscription status"
+    },
+    {
+      "src": "/static/screenshots/wide-report.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Scan report — security score, severity breakdown, and detected issues"
+    },
+    {
+      "src": "/static/screenshots/wide-history.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Scan history — every past scan at a glance"
+    },
+    {
+      "src": "/static/screenshots/narrow-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dashboard on mobile"
+    },
+    {
+      "src": "/static/screenshots/narrow-report.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Scan report on mobile"
+    }
   ]
 }
