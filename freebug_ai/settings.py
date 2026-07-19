@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------------------------------------------------------
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-this-in-production-please')
 
-DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'False'
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -27,9 +27,7 @@ RAILWAY_PUBLIC_DOMAIN = os.getenv('RAILWAY_PUBLIC_DOMAIN')
 if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
     CSRF_TRUSTED_ORIGINS = [f'https://{RAILWAY_PUBLIC_DOMAIN}']
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_COOKIE_SECURE=True
-SESSION_COOKIE_SECURE =True
+
 # ------------------------------------------------------------------
 # APPLICATION DEFINITION
 # ------------------------------------------------------------------
