@@ -6,7 +6,7 @@ from django import forms
 class ConnectRepoForm(forms.Form):
     repo_full_name = forms.CharField(
         max_length=255,
-        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. octocat/hello-world'}),
+        widget=forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g. Faizz/hello-user'}),
         label='Repository (owner/repo)',
     )
     access_token = forms.CharField(
