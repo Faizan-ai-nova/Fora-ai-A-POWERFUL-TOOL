@@ -39,6 +39,15 @@
         <a href="{% url 'subscriptions:pricing' %}" class="btn btn-secondary btn-lg">See pricing</a>
       </div>
       <p class="text-muted mt-16" style="font-size: 13.5px;">No credit card required · 10 free scans on signup</p>
+
+      <div class="lang-pill-row">
+        <span class="lang-pill active">Python</span>
+        <span class="lang-pill">Django</span>
+        <span class="lang-pill">JavaScript</span>
+        <span class="lang-pill">HTML</span>
+        <span class="lang-pill">CSS</span>
+        <span class="lang-pill">.zip project</span>
+      </div>
     </div>
 
     <!-- Signature element: animated scan beam over a real code sample -->
@@ -70,56 +79,71 @@ def save_settings(request):
     <p class="text-secondary" style="text-align:center; max-width: 560px; margin: 12px auto 48px;">
       One scan surfaces the issue, why it matters, and exactly how to fix it.
     </p>
-    <div class="stat-grid">
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--danger);">SQLi / XSS</div>
-        <h3 class="mt-16" style="font-size:17px;">Injection &amp; XSS</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">SQL injection, command injection, and cross-site scripting across every language you paste in.</p>
+    <div class="feature-grid-v2">
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 3 6v6c0 5 3.8 8.7 9 10 5.2-1.3 9-5 9-10V6l-9-4Z"/><path d="m9.5 12.5 2 2 4-4"/></svg>
+        </div>
+        <h3>Injection &amp; XSS</h3>
+        <p>SQL injection, command injection, and cross-site scripting across every language you paste in.</p>
       </div>
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--high);">SECRET</div>
-        <h3 class="mt-16" style="font-size:17px;">Hardcoded Secrets</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">Catch API keys, tokens, and passwords committed straight into your source.</p>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Hardcoded Secrets</h3>
+        <p>Catch API keys, tokens, and passwords committed straight into your source.</p>
       </div>
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--medium);">CSRF / AUTH</div>
-        <h3 class="mt-16" style="font-size:17px;">CSRF &amp; Auth Flaws</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">Missing CSRF tokens, weak password logic, and broken authentication patterns.</p>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+        </div>
+        <h3>CSRF &amp; Auth Flaws</h3>
+        <p>Missing CSRF tokens, weak password logic, and broken authentication patterns.</p>
       </div>
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--low);">OWASP-10</div>
-        <h3 class="mt-16" style="font-size:17px;">OWASP Top 10</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">Mapped to OWASP references so you know exactly what standard each issue violates.</p>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <h3>OWASP Top 10</h3>
+        <p>Mapped to OWASP references so you know exactly what standard each issue violates.</p>
       </div>
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--text-muted);">*.zip</div>
-        <h3 class="mt-16" style="font-size:17px;">Whole-Project Scans</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">Upload a ZIP of your Django project and scan every file in one pass.</p>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M8 3H5a2 2 0 0 0-2 2v3"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+        </div>
+        <h3>Whole-Project Scans</h3>
+        <p>Upload a ZIP of your Django project and scan every file in one pass.</p>
       </div>
-      <div class="glass-card padded">
-        <div class="mono" style="font-size:12px; font-weight:700; letter-spacing:0.04em; color:var(--accent-indigo);">BYO-KEY</div>
-        <h3 class="mt-16" style="font-size:17px;">AI-Ready Engine</h3>
-        <p class="text-secondary mt-8" style="font-size:14px;">Pluggable architecture for Gemini, OpenAI, Claude, or Groq — bring your own key.</p>
+      <div class="glass-card feature-tile">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+        </div>
+        <h3>AI-Ready Engine</h3>
+        <p>Pluggable architecture for Gemini, OpenAI, Claude, or Groq — bring your own key.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section id="how-it-works" style="padding: 60px clamp(20px,5vw,40px);">
-  <div class="container-narrow">
+  <div class="container">
     <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 48px;">How it works</h2>
-    <div class="flex-col gap-24">
-      <div class="glass-card padded flex gap-16">
-        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">01</div>
-        <div><h3 style="font-size:16px;">Paste, upload, or drop a ZIP</h3><p class="text-secondary mt-8" style="font-size:14px;">Bring code from anywhere — a single file or an entire project.</p></div>
+    <div class="step-flow">
+      <div class="step-tile">
+        <div class="step-num">1</div>
+        <h3>Paste, upload, or drop a ZIP</h3>
+        <p>Bring code from anywhere — a single file or an entire project.</p>
       </div>
-      <div class="glass-card padded flex gap-16">
-        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">02</div>
-        <div><h3 style="font-size:16px;">Fora AI scans every line</h3><p class="text-secondary mt-8" style="font-size:14px;">Our engine checks for OWASP Top 10 issues and language-specific pitfalls.</p></div>
+      <div class="step-tile">
+        <div class="step-num">2</div>
+        <h3>Fora AI scans every line</h3>
+        <p>Our engine checks for OWASP Top 10 issues and language-specific pitfalls.</p>
       </div>
-      <div class="glass-card padded flex gap-16">
-        <div class="text-gradient" style="font-family:var(--font-display); font-size:24px; font-weight:700;">03</div>
-        <div><h3 style="font-size:16px;">Get a score and a fix for every issue</h3><p class="text-secondary mt-8" style="font-size:14px;">A 0–100 security score, severity breakdown, and secure code examples.</p></div>
+      <div class="step-tile">
+        <div class="step-num">3</div>
+        <h3>Get a score and a fix for every issue</h3>
+        <p>A 0–100 security score, severity breakdown, and secure code examples.</p>
       </div>
     </div>
   </div>
@@ -141,6 +165,71 @@ def save_settings(request):
           allowfullscreen
           loading="lazy">
         </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials" style="padding: 60px clamp(20px,5vw,40px);">
+  <div class="container">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 48px;">What developers are saying</h2>
+    <div class="testimonial-grid">
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">Caught a SQL injection in my Django view before it ever went to staging. Would've been a bad day otherwise.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">R</div>
+          <div><div class="testimonial-name">Rahul</div><div class="testimonial-role">Backend Developer</div></div>
+        </div>
+      </div>
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">I run every freelance project through Fora AI before handover. Clients notice the security score.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">S</div>
+          <div><div class="testimonial-name">Sara</div><div class="testimonial-role">Freelance Developer</div></div>
+        </div>
+      </div>
+      <div class="glass-card testimonial-card">
+        <p class="testimonial-quote">The ZIP scan on our whole Django project surfaced hardcoded keys we'd completely forgotten about.</p>
+        <div class="testimonial-person">
+          <div class="testimonial-avatar">A</div>
+          <div><div class="testimonial-name">Aditya</div><div class="testimonial-role">Team Lead</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding: 60px clamp(20px,5vw,40px);">
+  <div class="container-narrow">
+    <h2 style="text-align:center; font-size: clamp(24px,5vw,34px); margin-bottom: 40px;">Frequently asked questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          What languages does Fora AI support?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Python, Django, JavaScript, HTML, and CSS today — with more languages on the roadmap.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          Is there a free plan?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes — every new account gets 10 free scans, no credit card required.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          Can I scan a whole project, not just one file?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes — upload a ZIP of your Django project and Fora AI scans every file in one pass.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" data-faq-toggle>
+          Is my code stored or shared anywhere?
+          <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">Your code is scanned to generate your report and is not shared with third parties.</div></div>
       </div>
     </div>
   </div>
