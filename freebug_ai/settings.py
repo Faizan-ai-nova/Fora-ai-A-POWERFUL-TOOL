@@ -28,6 +28,8 @@ if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
     CSRF_TRUSTED_ORIGINS = [f'https://{RAILWAY_PUBLIC_DOMAIN}']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE=True
+SESSION_COOKIE_SECURE =True
 # ------------------------------------------------------------------
 # APPLICATION DEFINITION
 # ------------------------------------------------------------------
