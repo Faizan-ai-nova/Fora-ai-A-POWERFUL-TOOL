@@ -15,7 +15,22 @@
   </div>
 </div>
 
-<div class="grid-2 mb-24">
+<div class="grid-2 mb-24" data-skeleton-loader="score-summary">
+  <div class="glass-card padded" style="text-align:center;">
+    <div class="skeleton skeleton-line w-40" style="margin:0 auto 20px;"></div>
+    <div class="skeleton skeleton-ring mt-16"></div>
+  </div>
+  <div class="glass-card padded">
+    <div class="skeleton skeleton-line w-60" style="margin-bottom:22px;"></div>
+    <div class="flex-col gap-12">
+      {% for i in "12345" %}
+      <div class="flex-between"><div class="skeleton skeleton-pill" style="width:70px; height:22px;"></div><div class="skeleton skeleton-line sm w-40" style="margin:0; width:24px;"></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 mb-24 sk-hidden" data-skeleton-target="score-summary">
   <div class="glass-card padded" style="text-align:center;">
     <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Security Score</h3>
     <div class="score-ring-wrap mt-16" style="background: conic-gradient(
@@ -57,7 +72,21 @@
 <h2 style="font-size:20px; margin-bottom:16px;">Detected issues</h2>
 
 {% if issues %}
-<div class="flex-col gap-16">
+<div class="flex-col gap-16" data-skeleton-loader="issues-list">
+  {% for i in "123" %}
+  <div class="glass-card padded skeleton" style="padding:20px 28px;">
+    <div class="flex gap-12" style="align-items:center;">
+      <div class="skeleton-pill" style="width:60px; height:22px; background:var(--bg-glass-hover);"></div>
+      <div style="flex:1;">
+        <div class="skeleton-line w-60" style="background:var(--bg-glass-hover); margin-bottom:8px;"></div>
+        <div class="skeleton-line sm w-40" style="background:var(--bg-glass-hover); margin-bottom:0;"></div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="flex-col gap-16 sk-hidden" data-skeleton-target="issues-list">
   {% for issue in issues %}
   <div class="glass-card padded" data-accordion>
     <div class="flex-between" data-accordion-toggle style="cursor:pointer;">
