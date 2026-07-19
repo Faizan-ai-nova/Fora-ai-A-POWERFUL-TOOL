@@ -37,6 +37,8 @@
 </head>
 <body class="{% block body_class %}{% endblock %}" data-theme="{% if request.user.is_authenticated and not request.user.dark_mode %}light{% else %}dark{% endif %}">
 
+  <div id="nav-progress"></div>
+
   <div id="toast-container"></div>
   {% for message in messages %}
     <div data-django-message data-message="{{ message }}" data-tag="{{ message.tags }}" style="display:none;"></div>
@@ -47,6 +49,18 @@
   <div id="loading-overlay" class="loading-overlay hidden">
     <div class="scan-loader"></div>
     <div class="text-muted">Scanning your code for vulnerabilities…</div>
+
+    <div class="skeleton-preview" style="width:100%; max-width:420px; margin-top:8px;">
+      <div class="glass-card padded skeleton" style="margin-bottom:14px;">
+        <div class="skeleton-line lg w-40" style="margin:0 auto 10px;"></div>
+        <div class="skeleton-ring skeleton" style="margin-top:6px;"></div>
+      </div>
+      <div class="glass-card padded skeleton">
+        <div class="skeleton-line w-100"></div>
+        <div class="skeleton-line w-80"></div>
+        <div class="skeleton-line w-60"></div>
+      </div>
+    </div>
   </div>
 
   <script src="{% static 'js/main.js' %}"></script>
