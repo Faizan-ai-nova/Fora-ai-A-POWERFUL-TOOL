@@ -1,5 +1,14 @@
 /* Fora AI - core frontend interactions */
 
+// ---------- Service worker registration (offline support + installability) ----------
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js').catch((err) => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+
 // ---------- Toasts ----------
 function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
