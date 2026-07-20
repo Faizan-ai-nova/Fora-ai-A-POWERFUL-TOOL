@@ -4,7 +4,7 @@
 
 {% block extra_css %}
 <style>
-  :root {
+  body {
     --bg-1: var(--bg-elevated); --bg-2: var(--bg-secondary); --bg-3: var(--bg-glass-hover);
     --border: var(--border-glass); --border-2: var(--border-glass); --border-3: var(--border-glass-strong);
     --text: var(--text-primary); --text-2: var(--text-secondary); --text-3: var(--text-muted);
@@ -21,7 +21,6 @@
     display: inline-flex; align-items: center; gap: 4px;
     background: var(--bg-2); border: 1px solid var(--border);
     border-radius: 999px; padding: 4px; margin-bottom: 48px;
-    box-shadow: 0 4px 16px rgba(20, 21, 43, 0.1);
   }
   .toggle-btn {
     padding: 6px 18px; border-radius: 999px; font-size: 13.5px;
@@ -42,13 +41,12 @@
   .plan-card {
     background: var(--bg-1); border: 1px solid var(--border);
     border-radius: var(--radius-lg); padding: 28px; position: relative;
-    box-shadow: 0 4px 20px rgba(20, 21, 43, 0.12);
-    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    transition: border-color var(--transition), transform var(--transition);
   }
-  .plan-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(20, 21, 43, 0.16); }
+  .plan-card:hover { transform: translateY(-2px); }
   .plan-card.featured {
     border-color: var(--accent);
-    box-shadow: 0 0 0 1px rgba(99,102,241,0.25), 0 20px 40px rgba(99,102,241,0.14);
+    box-shadow: 0 0 0 1px rgba(99,102,241,0.2), 0 20px 40px rgba(99,102,241,0.08);
   }
   .plan-badge {
     position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
@@ -99,7 +97,7 @@
   /* Compare section */
   .compare-wrap { max-width: 700px; margin: 60px auto 0; }
   .compare-wrap h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; text-align: center; }
-  .compare-table { width: 100%; border-collapse: collapse; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 4px 20px rgba(20, 21, 43, 0.12); }
+  .compare-table { width: 100%; border-collapse: collapse; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
   .compare-table th { padding: 12px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); border-bottom: 1px solid var(--border); text-align: left; }
   .compare-table td { padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border); }
   .compare-table tr:last-child td { border: none; }
@@ -142,6 +140,7 @@
         <li><span class="chk">✓</span>OWASP Top 10 detection</li>
         <li><span class="chk">✓</span>Secure code examples</li>
          <li><span class="chk">✓</span>Simple github integrations</li>
+          <li><span class="chk">✓</span>Badge Sharing</li>
         <li><span class="chk">✓</span>Dashboard & scan history</li>
       </ul>
       {% if request.user.is_authenticated %}
@@ -168,6 +167,7 @@
         <li><span class="chk">✓</span>AI-enhanced analysis (optional)</li>
         <li><span class="chk">✓</span>PDF report export</li>
         <li><span class="chk">✓</span>Advance github integrations</li>
+         <li><span class="chk">✓</span>Badge Sharing</li>
         <li><span class="chk">✓</span>Priority support</li>
       </ul>
       {% if request.user.is_authenticated %}
@@ -226,6 +226,7 @@
         <tr><td>AI-enhanced analysis</td><td class="c-no">✕</td><td class="c-yes">✓</td></tr>
         <tr><td>PDF export</td><td class="c-no">✕</td><td class="c-yes">✓</td></tr>
          <tr><td>Github integration</td><td class="c-no">✓</td><td class="c-yes">✓</td></tr>
+          <tr><td>Badge Sharing</td><td class="c-yes">✓</td><td class="c-yes">✓</td></tr>
         <tr><td>Priority support</td><td class="c-no">✕</td><td class="c-yes">✓</td></tr>
       </tbody>
     </table>
