@@ -12,6 +12,7 @@ crashes a scan - it just quietly contributes zero extra findings.
 
 import json
 import logging
+import re
 
 from .base import AIProvider
 
@@ -108,6 +109,9 @@ IMPORTANT OUTPUT RULES:
 * Do NOT include code fences.
 * Do NOT include explanations outside the JSON response.
 * Do NOT include additional keys.
+* Wrap your findings in a single JSON object with exactly one top-level key, "issues", whose value is a JSON array of issue objects.
+* Example shape: {"issues": [ { ... }, { ... } ]}
+* If no security vulnerabilities are found, return EXACTLY: {"issues": []}
 * Every issue object MUST contain EXACTLY the following keys and no others:
 
 {
@@ -145,11 +149,7 @@ Additional Requirements:
 * Prioritize exploitable vulnerabilities.
 * Detect multiple issues on the same line when applicable.
 
-If no security vulnerabilities are found, return EXACTLY:
-
-[]
-
-Your response MUST always be valid JSON and machine-readable.
+Your response MUST always be a single valid JSON object of the shape {"issues": [...]}, and nothing else - no preamble, no code fences, no trailing commentary.
 
 """
 
@@ -173,7 +173,7 @@ class OpenAIProvider(AIProvider):
                 response_format={'type': 'json_object'},
             )
             content = response.choices[0].message.content
-            return _safe_parse_json_list(content)
+            return _safe_parse_json_list(content, provider='openai')
         except Exception as exc:  # pragma: no cover - network dependent
             logger.warning('OpenAI provider failed: %s', exc)
             return []
@@ -188,10 +188,13 @@ class GeminiProvider(AIProvider):
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel('gemini-1.5-flash')
+            model = genai.GenerativeModel(
+                'gemini-1.5-flash',
+                generation_config={'response_mime_type': 'application/json'},
+            )
             prompt = f'{AI_SYSTEM_PROMPT}\n\nFile: {filename}\nLanguage: {language}\n\n```\n{code[:8000]}\n```'
             response = model.generate_content(prompt)
-            return _safe_parse_json_list(response.text)
+            return _safe_parse_json_list(response.text, provider='gemini')
         except Exception as exc:  # pragma: no cover - network dependent
             logger.warning('Gemini provider failed: %s', exc)
             return []
@@ -208,14 +211,16 @@ class ClaudeProvider(AIProvider):
             client = anthropic.Anthropic(api_key=self.api_key)
             message = client.messages.create(
                 model='claude-sonnet-4-6',
-                max_tokens=2000,
+                max_tokens=8192,
                 system=AI_SYSTEM_PROMPT,
                 messages=[
                     {'role': 'user', 'content': f'File: {filename}\nLanguage: {language}\n\n```\n{code[:8000]}\n```'}
                 ],
             )
             content = ''.join(block.text for block in message.content if hasattr(block, 'text'))
-            return _safe_parse_json_list(content)
+            if message.stop_reason == 'max_tokens':
+                logger.warning('Claude response was truncated at max_tokens for file %s', filename)
+            return _safe_parse_json_list(content, provider='claude')
         except Exception as exc:  # pragma: no cover - network dependent
             logger.warning('Claude provider failed: %s', exc)
             return []
@@ -237,9 +242,14 @@ class GroqProvider(AIProvider):
                     {'role': 'user', 'content': f'File: {filename}\nLanguage: {language}\n\n```\n{code[:8000]}\n```'},
                 ],
                 temperature=0.1,
+                max_tokens=8000,
+                response_format={'type': 'json_object'},
             )
             content = response.choices[0].message.content
-            return _safe_parse_json_list(content)
+            finish_reason = response.choices[0].finish_reason
+            if finish_reason == 'length':
+                logger.warning('Groq response was truncated (finish_reason=length) for file %s', filename)
+            return _safe_parse_json_list(content, provider='groq')
         except Exception as exc:  # pragma: no cover - network dependent
             logger.warning('Groq provider failed: %s', exc)
             return []
@@ -262,22 +272,61 @@ class MockProvider(AIProvider):
         return []
 
 
-def _safe_parse_json_list(text: str) -> list[dict]:
+_JSON_BLOCK_RE = re.compile(r'(\{.*\}|\[.*\])', re.DOTALL)
+
+
+def _safe_parse_json_list(text: str, provider: str = 'unknown') -> list[dict]:
+    """
+    Robustly parse an AI provider's response into a list of issue dicts.
+
+    Handles:
+    - Plain JSON array or object responses.
+    - Responses wrapped in ```json ... ``` or ``` ... ``` fences, with or
+      without a language label, with or without a trailing newline.
+    - Responses with stray preamble/trailing prose around the JSON.
+    - Object responses using "issues" / "findings" / "vulnerabilities" /
+      "results" as the wrapper key.
+    """
     if not text:
         return []
+
+    original = text
     text = text.strip()
-    # Strip markdown code fences some models wrap JSON in
-    if text.startswith('```'):
-        text = text.strip('`')
-        text = text.replace('json\n', '', 1)
+
+    # Strip a leading/trailing code fence regardless of language label or spacing
+    text = re.sub(r'^```[a-zA-Z]*\s*', '', text)
+    text = re.sub(r'\s*```$', '', text)
+    text = text.strip()
+
+    # If the model added any preamble/trailing commentary, pull out the
+    # outermost JSON object/array instead of assuming the whole string is JSON.
+    if not (text.startswith('{') or text.startswith('[')):
+        match = _JSON_BLOCK_RE.search(text)
+        if match:
+            text = match.group(1)
+
     try:
         data = json.loads(text)
-        if isinstance(data, dict):
-            data = data.get('issues', data.get('findings', []))
-        return data if isinstance(data, list) else []
     except (json.JSONDecodeError, TypeError):
-        logger.warning('Could not parse AI provider response as JSON')
+        logger.warning(
+            'Could not parse %s provider response as JSON. Raw response (first 1500 chars): %s',
+            provider, original[:1500],
+        )
         return []
+
+    if isinstance(data, dict):
+        for key in ('issues', 'findings', 'vulnerabilities', 'results'):
+            if key in data:
+                data = data[key]
+                break
+        else:
+            logger.warning(
+                '%s provider returned a JSON object with no recognized issues key: %s',
+                provider, list(data.keys()),
+            )
+            data = []
+
+    return data if isinstance(data, list) else []
 
 
 PROVIDER_REGISTRY = {
