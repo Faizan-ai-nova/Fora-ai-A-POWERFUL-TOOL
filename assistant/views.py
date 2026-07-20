@@ -48,9 +48,9 @@ This chat widget renders PLAIN TEXT only (no markdown rendering). Because of thi
 - Keep responses short — 2 to 4 sentences for most questions, more only if the user explicitly asks for a detailed explanation."""
 )
 
-MAX_HISTORY_MESSAGES = 10
-MAX_MESSAGES_PER_SESSION = 5
-MAX_MESSAGE_LENGTH = 1000
+MAX_HISTORY_MESSAGES = 20
+MAX_MESSAGES_PER_SESSION = 10
+MAX_MESSAGE_LENGTH = 500
 
 MISTRAL_URL = 'https://api.mistral.ai/v1/chat/completions'
 MISTRAL_MODEL = 'mistral-small-latest'
