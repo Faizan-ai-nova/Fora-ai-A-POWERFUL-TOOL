@@ -134,9 +134,11 @@
       }
 
       aiAssistantAppend(data.reply || data.error || 'Something went wrong.', 'bot');
+      input.disabled = false; // re-enable after a normal reply
     } catch (err) {
       typingEl.remove();
       aiAssistantAppend("Sorry, I couldn't reach the assistant right now.", 'bot');
+      input.disabled = false; // re-enable even if the request failed
     } finally {
       if (!input.disabled) {
         sendBtn.disabled = false;
