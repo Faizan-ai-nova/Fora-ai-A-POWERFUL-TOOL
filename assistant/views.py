@@ -78,7 +78,7 @@ def chat_api(request):
     sent_count = request.session.get('assistant_msg_count', 0)
     if sent_count >= MAX_MESSAGES_PER_SESSION:
         return JsonResponse({
-            'reply': "Whoa there, chatterbox. I've hit my 5-message limit — go touch some code instead.",
+            'reply': "Limit reached. The AI needs a coffee break.",
             'limit_reached': True,
         })
 
