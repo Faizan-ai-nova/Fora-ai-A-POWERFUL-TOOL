@@ -4,11 +4,14 @@ optionally augments with a configured AI provider, deduplicates findings,
 and computes the overall security score.
 """
 
+import logging
 import os
 
 from . import rules as rule_engine
 from .providers import get_provider
 from .cwe_map import get_cwe_reference
+
+logger = logging.getLogger(__name__)
 
 
 EXTENSION_LANGUAGE_MAP = {
@@ -56,10 +59,16 @@ def analyze_single_file(filename: str, code: str, use_ai: bool = True) -> tuple[
     findings.extend(rule_engine.detect_missing_security_headers(code, filename))
 
     if use_ai:
-        provider = get_provider()
-        if provider.is_configured:
-            ai_findings = provider.analyze(code, filename, language)
-            findings.extend(_normalize_ai_findings(ai_findings))
+        try:
+            provider = get_provider()
+            if provider.is_configured:
+                ai_findings = provider.analyze(code, filename, language)
+                findings.extend(_normalize_ai_findings(ai_findings))
+        except Exception as exc:
+            # Safety net: an AI provider outage/rate-limit/timeout must never
+            # take down the whole zip scan. Worst case, this file just falls
+            # back to rule-engine-only findings.
+            logger.warning('AI analysis failed for %s, continuing without it: %s', filename, exc)
 
     return language, _attach_cwe(_deduplicate(findings))
 
