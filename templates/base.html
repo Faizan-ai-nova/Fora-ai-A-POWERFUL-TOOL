@@ -42,7 +42,7 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}" data-theme="{% if request.user.is_authenticated and request.user.dark_mode %}dark{% else %}light{% endif %}">
+<body class="{% block body_class %}{% endblock %}" data-theme="light">
 
   <div id="nav-progress"></div>
 
