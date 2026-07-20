@@ -13,6 +13,9 @@ crashes a scan - it just quietly contributes zero extra findings.
 import json
 import logging
 import re
+import time
+import threading
+from collections import deque
 
 from .base import AIProvider
 
@@ -226,33 +229,109 @@ class ClaudeProvider(AIProvider):
             return []
 
 
+class _RateLimiter:
+    """
+    Simple in-process sliding-window throttle: at most `max_calls` calls
+    within any `period` seconds. Thread-safe so it works correctly even if
+    gunicorn is running multiple sync workers/threads hitting the same
+    provider concurrently during a zip scan.
+    """
+
+    def __init__(self, max_calls: int, period: float):
+        self.max_calls = max_calls
+        self.period = period
+        self.calls = deque()
+        self.lock = threading.Lock()
+
+    def wait(self):
+        with self.lock:
+            now = time.time()
+            while self.calls and now - self.calls[0] > self.period:
+                self.calls.popleft()
+
+            if len(self.calls) >= self.max_calls:
+                sleep_time = self.period - (now - self.calls[0])
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                now = time.time()
+                while self.calls and now - self.calls[0] > self.period:
+                    self.calls.popleft()
+
+            self.calls.append(time.time())
+
+
+def _extract_retry_after(exc) -> float | None:
+    """Groq's 429 response usually carries a Retry-After header - prefer it
+    over a blind exponential backoff when it's available."""
+    try:
+        response = getattr(exc, 'response', None)
+        if response is not None:
+            retry_after = response.headers.get('retry-after')
+            if retry_after:
+                return float(retry_after)
+    except Exception:
+        pass
+    return None
+
+
+# Groq's free tier is roughly ~30 requests/min depending on the model.
+# We cap ourselves at 25/min to leave headroom instead of riding the edge.
+_groq_rate_limiter = _RateLimiter(max_calls=25, period=60)
+
+
 class GroqProvider(AIProvider):
     name = 'groq'
+    MAX_RETRIES = 3
 
     def analyze(self, code: str, filename: str, language: str) -> list[dict]:
         if not self.is_configured:
             return []
+
         try:
-            from groq import Groq
-            client = Groq(api_key=self.api_key)
-            response = client.chat.completions.create(
-                model='llama-3.3-70b-versatile',
-                messages=[
-                    {'role': 'system', 'content': AI_SYSTEM_PROMPT},
-                    {'role': 'user', 'content': f'File: {filename}\nLanguage: {language}\n\n```\n{code[:8000]}\n```'},
-                ],
-                temperature=0.1,
-                max_tokens=8000,
-                response_format={'type': 'json_object'},
-            )
-            content = response.choices[0].message.content
-            finish_reason = response.choices[0].finish_reason
-            if finish_reason == 'length':
-                logger.warning('Groq response was truncated (finish_reason=length) for file %s', filename)
-            return _safe_parse_json_list(content, provider='groq')
-        except Exception as exc:  # pragma: no cover - network dependent
-            logger.warning('Groq provider failed: %s', exc)
+            from groq import Groq, RateLimitError
+        except ImportError as exc:  # pragma: no cover - dependency issue
+            logger.warning('Groq SDK import failed: %s', exc)
             return []
+
+        client = Groq(api_key=self.api_key)
+
+        for attempt in range(self.MAX_RETRIES):
+            _groq_rate_limiter.wait()  # throttle before every attempt, not just retries
+            try:
+                response = client.chat.completions.create(
+                    model='llama-3.3-70b-versatile',
+                    messages=[
+                        {'role': 'system', 'content': AI_SYSTEM_PROMPT},
+                        {'role': 'user', 'content': f'File: {filename}\nLanguage: {language}\n\n```\n{code[:8000]}\n```'},
+                    ],
+                    temperature=0.1,
+                    max_tokens=8000,
+                    response_format={'type': 'json_object'},
+                )
+                content = response.choices[0].message.content
+                finish_reason = response.choices[0].finish_reason
+                if finish_reason == 'length':
+                    logger.warning('Groq response was truncated (finish_reason=length) for file %s', filename)
+                return _safe_parse_json_list(content, provider='groq')
+
+            except RateLimitError as exc:
+                wait_time = _extract_retry_after(exc) or (2 ** attempt)
+                logger.warning(
+                    'Groq rate limited (attempt %d/%d) for %s - retrying in %.1fs',
+                    attempt + 1, self.MAX_RETRIES, filename, wait_time,
+                )
+                time.sleep(wait_time)
+                continue
+
+            except Exception as exc:  # pragma: no cover - network dependent
+                logger.warning('Groq provider failed: %s', exc)
+                return []
+
+        logger.warning(
+            'Groq gave up after %d retries for %s - skipping AI findings for this file',
+            self.MAX_RETRIES, filename,
+        )
+        return []
 
 
 class MockProvider(AIProvider):
