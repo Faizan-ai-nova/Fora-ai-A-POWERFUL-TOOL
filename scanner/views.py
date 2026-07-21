@@ -220,7 +220,17 @@ def scan_zip_view(request):
         _persist_findings(scan, language, findings, scanned_file)
         all_findings.extend(findings)
 
-    scan.language = ', '.join(sorted(languages_seen)) if languages_seen else ''
+    if not languages_seen:
+        scan.language = ''
+    elif len(languages_seen) == 1:
+        scan.language = next(iter(languages_seen))
+    else:
+        # Scan.language is capped at 30 chars in the DB (varchar(30) on
+        # Postgres) - a joined list like "css, django, html, javascript,
+        # python" can easily exceed that and raise a DataError. Fall back
+        # to a short summary instead of risking the column limit.
+        joined = ', '.join(sorted(languages_seen))
+        scan.language = joined if len(joined) <= 30 else 'Mixed'
     _finalize_scan(scan, all_findings, use_ai=use_ai)
 
     request.user.consume_scan()
