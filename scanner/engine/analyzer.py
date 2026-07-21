@@ -102,10 +102,26 @@ def _normalize_ai_findings(ai_findings: list[dict]) -> list[dict]:
             'why_dangerous': item.get('why_dangerous', ''),
             'recommended_fix': item.get('recommended_fix', ''),
             'secure_code_example': item.get('secure_code_example', ''),
-            'line_number': item.get('line_number'),
+            'line_number': _safe_line_number(item.get('line_number')),
             'code_snippet': item.get('code_snippet', ''),
         })
     return normalized
+
+
+def _safe_line_number(value) -> int | None:
+    """AI providers are prompted to send 'unknown' (a string) when a line
+    number isn't identifiable, but Issue.line_number is a PositiveIntegerField -
+    passing that string straight through raises a ValueError and takes down
+    the whole scan. Coerce to a real int, or None if it isn't one."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value > 0 else None
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+    return None
 
 
 def _deduplicate(findings: list[dict]) -> list[dict]:
