@@ -14,6 +14,7 @@ class Command(BaseCommand):
             'owasp': 'OWASP & Standards',
             'appsec-basics': 'AppSec Basics',
             'vibe-coding': 'AI & Vibe Coding',
+            'product-updates': 'Product Updates',
         }
         cat_objs = {}
         for slug, name in categories.items():
@@ -330,6 +331,45 @@ obj = pickle.loads(data)</code></pre>
 ''',
             },
         ]
+
+        posts.append({
+            'title': 'Introducing AI Agent Testing: Fora AI Isn\u2019t Just a Code Scanner Anymore',
+            'slug': 'introducing-ai-agent-testing',
+            'category': cat_objs['product-updates'],
+            'reading_time_minutes': 6,
+            'excerpt': 'Fora AI now lets you test prompts and AI agents directly \u2014 latency, token usage, estimated cost, and pass/fail matching, across Groq, OpenAI, Gemini, and Claude.',
+            'published_at': now,
+            'body_html': '''
+<p>Fora AI started as a static code security scanner: paste in code, upload a file, or drop a ZIP, and get back a security score with a fix for every issue found. That part isn't going anywhere \u2014 it's still the core of the product. But it's no longer the whole product. Today we're shipping the first piece of something bigger: <strong>AI Agent Testing</strong>.</p>
+
+<h2>Why a security scanner is adding agent testing</h2>
+<p>More teams are shipping AI agents and LLM-powered features into production than ever, and a pattern keeps showing up: the code around the agent gets reviewed carefully, but the agent's actual behavior \u2014 what it says, how fast, at what cost, and whether it holds up across different models \u2014 doesn't get tested with the same rigor as everything else in the codebase. Quality has become one of the biggest blockers to shipping agents with confidence, and most of that gap comes down to a simple problem: teams aren't measuring agent output the way they measure everything else they ship.</p>
+<p>That's the gap Fora AI's new AI Engineering section starts to close. Security scanning tells you your code is safe. Agent testing tells you your AI is actually doing what you built it to do.</p>
+
+<h2>What you can do right now</h2>
+<p>Head to <strong>AI Engineering &rarr; Agent Testing</strong> in your dashboard. You'll get a simple form:</p>
+<ul>
+<li><strong>Pick a provider</strong> \u2014 Groq, OpenAI, Gemini, or Claude \u2014 and optionally override the exact model.</li>
+<li><strong>Write a system prompt</strong> (optional) \u2014 the instructions your agent would normally run with.</li>
+<li><strong>Write a test input</strong> \u2014 the message you want to send, exactly as a real user might phrase it.</li>
+<li><strong>Set an expected output</strong> (optional) \u2014 if you know roughly what the reply should contain, Fora AI checks for it automatically.</li>
+</ul>
+<p>Hit run, and you get back the full reply along with the numbers that actually matter for shipping an agent to production: response latency in milliseconds, prompt and completion token counts, and an estimated cost for that single call. If you set an expected output, you'll also see a pass or fail based on a simple contains-check against the reply.</p>
+
+<h2>Why these specific metrics</h2>
+<p>Latency, token usage, and cost aren't vanity numbers \u2014 they're the three things that turn "the agent works in my testing" into "the agent works at the volume and budget I actually have." A prompt that produces a great answer but costs ten times more than a shorter, equally good prompt is a real trade-off worth seeing before it's buried in a monthly API bill. A response that's accurate but takes six seconds might be fine for a background job and unacceptable for a chat widget. Testing each combination side by side, instead of guessing, is the whole point.</p>
+
+<h2>Every test is saved</h2>
+<p>Every run lands in your Test History, so you can go back and compare how the same prompt behaved on a different model, or how a system prompt tweak changed the response, the cost, or both. It's a lightweight log today; version comparison and side-by-side model runs are next on the roadmap.</p>
+
+<h2>What's next</h2>
+<p>This manual, single-prompt test is the first slice of a larger AI Engineering platform we're building on top of Fora AI's existing security core \u2014 batch testing against a CSV of test cases, side-by-side model comparison, and a pre-deploy check that runs your security scan and your agent evaluation together before you ship. Each piece ships as its own usable feature rather than one big release, so you can start using agent testing today without waiting on the rest.</p>
+
+<h2>Free to try</h2>
+<p>Every account gets free agent tests to start, no separate signup or credit card needed \u2014 the same no-friction approach we've always taken with scanning. Go run your first test and see what your agent actually costs per call.</p>
+''',
+        })
+
 
         for data in posts:
             slug = data.pop('slug')

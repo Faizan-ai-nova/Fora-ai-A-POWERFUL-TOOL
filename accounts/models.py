@@ -31,6 +31,12 @@ class User(AbstractUser):
     scans_remaining = models.PositiveIntegerField(default=10)
     total_scans_used = models.PositiveIntegerField(default=0)
 
+    # AI Agent Testing quota (Module 3) — same free-tier shape as scans,
+    # kept as a separate counter since a person's plan may grant different
+    # amounts of each.
+    agent_tests_remaining = models.PositiveIntegerField(default=10)
+    total_agent_tests_used = models.PositiveIntegerField(default=0)
+
     # Preferences - future ready for light/dark toggle & notifications
     dark_mode = models.BooleanField(default=True)
     email_notifications = models.BooleanField(default=True)
@@ -69,6 +75,24 @@ class User(AbstractUser):
             self.scans_remaining -= 1
             self.total_scans_used += 1
             self.save(update_fields=['scans_remaining', 'total_scans_used'])
+
+    def can_run_agent_test(self):
+        """Unlimited plans bypass the agent_tests_remaining counter entirely."""
+        active_sub = self.subscriptions.filter(status='active').order_by('-created_at').first()
+        if active_sub and active_sub.plan.is_unlimited:
+            return True
+        return self.agent_tests_remaining > 0
+
+    def consume_agent_test(self):
+        active_sub = self.subscriptions.filter(status='active').order_by('-created_at').first()
+        if active_sub and active_sub.plan.is_unlimited:
+            self.total_agent_tests_used += 1
+            self.save(update_fields=['total_agent_tests_used'])
+            return
+        if self.agent_tests_remaining > 0:
+            self.agent_tests_remaining -= 1
+            self.total_agent_tests_used += 1
+            self.save(update_fields=['agent_tests_remaining', 'total_agent_tests_used'])
 
 
 class PasswordResetToken(models.Model):
