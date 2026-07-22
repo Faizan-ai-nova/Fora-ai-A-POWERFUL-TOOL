@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'pages',
     'blog',
     'assistant',
+    'agentlab',
 ]
 
 MIDDLEWARE = [

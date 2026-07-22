@@ -21,6 +21,7 @@ urlpatterns = [
     path('payments/', include('payments.urls')),
     path('reports/', include('reports.urls')),
     path('assistant/', include('assistant.urls')),
+    path('agentlab/', include('agentlab.urls')),
     path('integrations/', include('integrations.urls')),
     path('blog/', include('blog.urls')),
     path('', include('pages.urls')),

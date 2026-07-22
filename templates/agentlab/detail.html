@@ -1,0 +1,72 @@
+{% extends "partials/app_base.html" %}
+{% block title %}{{ test.name }} — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 26px;">{{ test.name }}</h1>
+    <p class="text-secondary mt-8">
+      <span class="tag-pill">{{ test.get_provider_display }}</span>
+      {{ test.model_name|default:"—" }} · {{ test.created_at|date:"M d, Y H:i" }}
+    </p>
+  </div>
+  <a href="{% url 'agentlab:history' %}" class="btn btn-secondary btn-sm">← Back to history</a>
+</div>
+
+<div class="mb-24" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:16px;">
+  <div class="glass-card padded">
+    <div class="text-muted" style="font-size:12.5px;">Status</div>
+    <div class="mt-8" style="font-size:18px; font-weight:600;">
+      <span class="badge badge-{{ test.status_badge_class }}">
+        {% if test.status == 'completed' and test.passed == True %}Passed
+        {% elif test.status == 'completed' and test.passed == False %}Failed match
+        {% else %}{{ test.get_status_display }}{% endif %}
+      </span>
+    </div>
+  </div>
+  <div class="glass-card padded">
+    <div class="text-muted" style="font-size:12.5px;">Latency</div>
+    <div class="mt-8" style="font-size:18px; font-weight:600;">{{ test.latency_ms }} ms</div>
+  </div>
+  <div class="glass-card padded">
+    <div class="text-muted" style="font-size:12.5px;">Tokens (prompt / completion)</div>
+    <div class="mt-8" style="font-size:18px; font-weight:600;">{{ test.prompt_tokens }} / {{ test.completion_tokens }}</div>
+  </div>
+  <div class="glass-card padded">
+    <div class="text-muted" style="font-size:12.5px;">Estimated cost</div>
+    <div class="mt-8" style="font-size:18px; font-weight:600;">${{ test.estimated_cost_usd }}</div>
+  </div>
+</div>
+
+{% if test.error_message %}
+<div class="glass-card padded mb-24" style="border-color: var(--accent-danger, #e5484d);">
+  <div class="text-muted" style="font-size:12.5px;">Error</div>
+  <div class="mt-8">{{ test.error_message }}</div>
+</div>
+{% endif %}
+
+{% if test.system_prompt %}
+<div class="glass-card padded mb-24">
+  <div class="text-muted mb-8" style="font-size:12.5px;">System prompt</div>
+  <pre style="white-space:pre-wrap; font-family:inherit;">{{ test.system_prompt }}</pre>
+</div>
+{% endif %}
+
+<div class="glass-card padded mb-24">
+  <div class="text-muted mb-8" style="font-size:12.5px;">Test input</div>
+  <pre style="white-space:pre-wrap; font-family:inherit;">{{ test.input_prompt }}</pre>
+</div>
+
+{% if test.expected_output %}
+<div class="glass-card padded mb-24">
+  <div class="text-muted mb-8" style="font-size:12.5px;">Expected output (contains-check)</div>
+  <pre style="white-space:pre-wrap; font-family:inherit;">{{ test.expected_output }}</pre>
+</div>
+{% endif %}
+
+<div class="glass-card padded mb-24">
+  <div class="text-muted mb-8" style="font-size:12.5px;">Actual output</div>
+  <pre style="white-space:pre-wrap; font-family:inherit;">{{ test.actual_output|default:"—" }}</pre>
+</div>
+
+<a href="{% url 'agentlab:new_test' %}" class="btn btn-primary">▶️ Run another test</a>
+{% endblock %}

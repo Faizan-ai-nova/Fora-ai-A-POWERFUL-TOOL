@@ -29,6 +29,14 @@
     <span>💳</span> Subscription
   </a>
 
+  <div class="sidebar-section-label">AI Engineering</div>
+  <a href="{% url 'agentlab:new_test' %}" class="sidebar-link {% if request.resolver_match.app_name == 'agentlab' and request.resolver_match.url_name == 'new_test' %}active{% endif %}">
+    <span>🧪</span> Agent Testing
+  </a>
+  <a href="{% url 'agentlab:history' %}" class="sidebar-link {% if request.resolver_match.app_name == 'agentlab' and request.resolver_match.url_name == 'history' %}active{% endif %}">
+    <span>📈</span> Test History
+  </a>
+
   <div class="sidebar-section-label">Account</div>
   <a href="{% url 'accounts:profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
     <span>👤</span> Profile

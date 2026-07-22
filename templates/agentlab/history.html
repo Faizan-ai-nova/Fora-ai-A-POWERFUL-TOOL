@@ -1,0 +1,66 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Test History — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 26px;">Agent test history</h1>
+    <p class="text-secondary mt-8">All your previous AI agent test runs.</p>
+  </div>
+  <a href="{% url 'agentlab:new_test' %}" class="btn btn-primary">+ New Test</a>
+</div>
+
+<div class="glass-card" style="overflow-x:auto;">
+  {% if page_obj.object_list %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Provider</th>
+        <th>Model</th>
+        <th>Status</th>
+        <th>Latency</th>
+        <th>Tokens</th>
+        <th>Est. Cost</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for test in page_obj.object_list %}
+      <tr>
+        <td style="font-weight:600;">{{ test.name }}</td>
+        <td><span class="tag-pill">{{ test.get_provider_display }}</span></td>
+        <td class="text-secondary">{{ test.model_name|default:"—" }}</td>
+        <td>
+          <span class="badge badge-{{ test.status_badge_class }}">
+            {% if test.status == 'completed' and test.passed == True %}Passed
+            {% elif test.status == 'completed' and test.passed == False %}Failed match
+            {% else %}{{ test.get_status_display }}{% endif %}
+          </span>
+        </td>
+        <td class="text-secondary">{{ test.latency_ms }} ms</td>
+        <td class="text-secondary">{{ test.total_tokens }}</td>
+        <td class="text-secondary">${{ test.estimated_cost_usd }}</td>
+        <td class="text-muted">{{ test.created_at|date:"M d, Y" }}</td>
+        <td><a href="{% url 'agentlab:detail' test.id %}" class="btn btn-secondary btn-sm">View</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🧪</div>
+      <p>No agent tests yet.</p>
+      <a href="{% url 'agentlab:new_test' %}" class="btn btn-primary mt-16">Run your first test</a>
+    </div>
+  {% endif %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="flex gap-8 mt-24" style="justify-content:center;">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm">← Prev</a>{% endif %}
+  <span class="text-muted" style="align-self:center; font-size:13.5px;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

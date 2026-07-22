@@ -1,0 +1,71 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Agent Testing — Fora AI{% endblock %}
+{% block app_content %}
+<div class="mb-24">
+  <h1 style="font-size: 26px;">🧪 AI Agent Testing</h1>
+  <p class="text-secondary mt-8">
+    {{ tests_remaining }} test{{ tests_remaining|pluralize }} remaining on your plan · 10 models across Groq, OpenAI, Gemini &amp; Claude
+  </p>
+</div>
+
+<div class="glass-card padded">
+  <form method="post" action="{% url 'agentlab:new_test' %}">
+    {% csrf_token %}
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Test name (optional)</label>
+        {{ form.name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Model</label>
+        {{ form.model_name }}
+        <div class="form-help">Groq models work instantly with the built-in key. Others need your own key below.</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Your API key <span class="text-muted" style="font-weight:400;">(optional)</span></label>
+      {{ form.api_key }}
+      <div class="form-help">Leave blank to use the built-in Groq key. Enter your own to test with your own Groq key, or for OpenAI / Gemini / Claude / a custom model. Used only for this one test call, never saved.</div>
+    </div>
+
+    <div class="glass-card padded" style="background: rgba(255,255,255,0.02); margin-bottom: 20px;">
+      <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600;">Only fill these in if you picked "Custom model" above</div>
+      <div class="form-group">
+        <label class="form-label">Custom model type</label>
+        {{ form.custom_provider_type }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Custom model ID</label>
+        {{ form.custom_model_name }}
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Custom endpoint URL <span class="text-muted" style="font-weight:400;">(OpenAI-compatible only)</span></label>
+        {{ form.custom_api_base }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">System prompt (optional)</label>
+      {{ form.system_prompt }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Test input</label>
+      {{ form.input_prompt }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Expected output (optional)</label>
+      {{ form.expected_output }}
+      <div class="form-help">If set, we do a simple case-insensitive "contains" check against the reply.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">▶️ Run Test</button>
+  </form>
+</div>
+
+<div class="mt-24">
+  <a href="{% url 'agentlab:history' %}" class="btn btn-secondary btn-sm">📈 View test history</a>
+</div>
+{% endblock %}
