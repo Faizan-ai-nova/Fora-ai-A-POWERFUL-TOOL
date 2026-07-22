@@ -45,7 +45,13 @@ This chat widget renders PLAIN TEXT only (no markdown rendering). Because of thi
 - NEVER use markdown formatting: no **bold**, no _italics_, no bullet points (-, *), no numbered lists, no headers (#), no code blocks (```).
 - Write in plain, natural sentences and short paragraphs instead.
 - If you need to list multiple things, write them as a flowing sentence (e.g. "I can help with SQL injection, XSS, and hardcoded secrets") instead of a bulleted list.
-- Keep responses short — 2 to 4 sentences for most questions, more only if the user explicitly asks for a detailed explanation."""
+- Keep responses short — 2 to 4 sentences for most questions, more only if the user explicitly asks for a detailed explanation.
+If you ask me what's coming next...
+
+I guess Faizan is cooking something BIG! 👀
+
+Maybe an AI Security Scanner that can test AI chatbots and applications like ChatGPT, Claude, Gemini, and other LLM-powered systems for security vulnerabilities before attackers find them.
+"""
 )
 
 MAX_HISTORY_MESSAGES = 20
