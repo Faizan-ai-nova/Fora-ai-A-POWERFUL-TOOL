@@ -6,10 +6,9 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.conf import settings
 
-from .forms import PasteCodeForm, FileUploadForm, ZipUploadForm
+from .forms import PasteCodeForm, FileUploadForm
 from .models import Scan, ScannedFile, Issue
 from .engine.analyzer import analyze_single_file, compute_security_score
-from .engine.zip_handler import extract_scannable_files, ZipSecurityError
 from .engine.providers import get_provider
 from .badge import render_score_badge_svg, render_unavailable_badge_svg
 
@@ -58,19 +57,17 @@ def _finalize_scan(scan: Scan, all_findings: list[dict], use_ai: bool = True):
 
 @login_required
 def new_scan_view(request):
-    """Landing page for starting a new scan - choose paste / file / zip."""
+    """Landing page for starting a new scan - choose paste / file."""
     guard = _guard_scan_quota(request)
     if guard:
         return guard
 
     paste_form = PasteCodeForm()
     file_form = FileUploadForm()
-    zip_form = ZipUploadForm()
 
     return render(request, 'scanner/new_scan.html', {
         'paste_form': paste_form,
         'file_form': file_form,
-        'zip_form': zip_form,
         'scans_remaining': request.user.scans_remaining,
         'use_ai': not request.user.is_on_free_plan,
     })
@@ -165,76 +162,6 @@ def scan_file_view(request):
 
     request.user.consume_scan()
     messages.success(request, 'Scan complete!')
-    return redirect('reports:detail', scan_id=scan.id)
-
-
-@login_required
-def scan_zip_view(request):
-    guard = _guard_scan_quota(request)
-    if guard:
-        return guard
-
-    if request.method != 'POST':
-        return redirect('scanner:new_scan')
-
-    form = ZipUploadForm(request.POST, request.FILES)
-    if not form.is_valid():
-        for err in form.errors.values():
-            messages.error(request, err.as_text())
-        return redirect('scanner:new_scan')
-
-    zip_file = form.cleaned_data['zip_file']
-    project_name = form.cleaned_data.get('project_name') or zip_file.name.rsplit('.', 1)[0]
-
-    try:
-        files = extract_scannable_files(zip_file)
-    except ZipSecurityError as exc:
-        messages.error(request, f'ZIP rejected: {exc}')
-        return redirect('scanner:new_scan')
-    except Exception:
-        messages.error(request, 'Could not process the ZIP file. Make sure it is a valid archive.')
-        return redirect('scanner:new_scan')
-
-    if not files:
-        messages.warning(request, 'No scannable source files (.py, .js, .html, .css) were found in the ZIP.')
-        return redirect('scanner:new_scan')
-
-    scan = Scan.objects.create(
-        user=request.user,
-        project_name=project_name,
-        source_type=Scan.SourceType.ZIP,
-        status=Scan.Status.RUNNING,
-    )
-
-    use_ai = not request.user.is_on_free_plan
-
-    all_findings = []
-    languages_seen = set()
-    for entry in files:
-        language, findings = analyze_single_file(entry['filename'], entry['content'], use_ai=use_ai)
-        languages_seen.add(language)
-        scanned_file = ScannedFile.objects.create(
-            scan=scan, filename=entry['filename'], language=language,
-            lines_of_code=len(entry['content'].splitlines())
-        )
-        _persist_findings(scan, language, findings, scanned_file)
-        all_findings.extend(findings)
-
-    if not languages_seen:
-        scan.language = ''
-    elif len(languages_seen) == 1:
-        scan.language = next(iter(languages_seen))
-    else:
-        # Scan.language is capped at 30 chars in the DB (varchar(30) on
-        # Postgres) - a joined list like "css, django, html, javascript,
-        # python" can easily exceed that and raise a DataError. Fall back
-        # to a short summary instead of risking the column limit.
-        joined = ', '.join(sorted(languages_seen))
-        scan.language = joined if len(joined) <= 30 else 'Mixed'
-    _finalize_scan(scan, all_findings, use_ai=use_ai)
-
-    request.user.consume_scan()
-    messages.success(request, f'Scan complete! Analyzed {len(files)} files.')
     return redirect('reports:detail', scan_id=scan.id)
 
 

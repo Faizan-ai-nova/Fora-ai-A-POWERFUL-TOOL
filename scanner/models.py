@@ -6,7 +6,7 @@ from django.urls import reverse
 
 
 class Scan(models.Model):
-    """A single security-scan job: one paste, one file, or one ZIP upload."""
+    """A single security-scan job: a paste, an uploaded file, or a GitHub push (ZIP)."""
 
     class SourceType(models.TextChoices):
         PASTE = 'paste', 'Pasted Code'
@@ -85,7 +85,7 @@ class Scan(models.Model):
 
 
 class ScannedFile(models.Model):
-    """Individual file scanned within a Scan (relevant for ZIP project uploads)."""
+    """Individual file scanned within a Scan (relevant for multi-file GitHub push scans)."""
     scan = models.ForeignKey(Scan, on_delete=models.CASCADE, related_name='files')
     filename = models.CharField(max_length=500)
     language = models.CharField(max_length=30, blank=True)
