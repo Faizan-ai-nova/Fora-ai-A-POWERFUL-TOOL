@@ -3,29 +3,23 @@
 {% block app_content %}
 <div class="mb-24">
   <h1 style="font-size: 26px;">🤖 AI Security Scanner</h1>
-  <p class="text-secondary mt-8">
-    {{ scans_remaining }} scan{{ scans_remaining|pluralize }} remaining on your plan · Runs {{ test_count }} attack simulations against your AI chatbot or agent
-  </p>
+  <p class="text-secondary mt-8">{{ scans_remaining }} scan{{ scans_remaining|pluralize }} left · {{ test_count }} attack tests per scan</p>
 </div>
 
 <div class="grid-2 mb-24">
   <div class="glass-card padded" style="text-align:center;">
     <div style="font-size:28px;">🧩</div>
     <div style="font-weight:600; margin-top:8px;">Prompt Injection & Jailbreak</div>
-    <div class="text-muted" style="font-size:12.5px; margin-top:4px;">Instruction hijacking, DAN-style bypasses</div>
   </div>
   <div class="glass-card padded" style="text-align:center;">
     <div style="font-size:28px;">🔑</div>
     <div style="font-weight:600; margin-top:8px;">Leak & Sensitive Data</div>
-    <div class="text-muted" style="font-size:12.5px; margin-top:4px;">System prompt, secrets, PII exposure</div>
   </div>
 </div>
 
 <div class="glass-card padded">
   <h3 style="font-size:16px; margin-bottom:4px;">Scan a target AI</h3>
-  <p class="text-secondary mb-16" style="font-size:13.5px;">
-    Paste the URL of a JSON chat API for your own bot or agent. Only scan endpoints you own or have permission to test.
-  </p>
+  <p class="text-secondary mb-16" style="font-size:13px;">JSON API endpoints only — no browser-rendered chat websites yet.</p>
 
   <form method="post" action="{% url 'ai_scanner:start_scan' %}">
     {% csrf_token %}
@@ -35,10 +29,47 @@
         {{ form.target_name }}
       </div>
       <div class="form-group">
-        <label class="form-label">AI endpoint URL</label>
-        {{ form.target_url }}
+        <label class="form-label">Target type</label>
+        {{ form.target_type }}
+        <div class="form-help">Auto-detect works for most targets</div>
       </div>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">API endpoint, agent, or RAG app URL</label>
+      {{ form.target_url }}
+      <div class="form-help">Only scan targets you own or have permission to test.</div>
+    </div>
+
+    <details class="mb-16">
+      <summary class="text-secondary" style="cursor:pointer; font-size:13.5px;">Authentication (optional)</summary>
+      <div class="grid-2 mt-16">
+        <div class="form-group">
+          <label class="form-label">API key</label>
+          {{ form.api_key }}
+          <div class="form-help">Encrypted at rest, never shown again</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bearer token</label>
+          {{ form.bearer_token }}
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Authorization header (legacy)</label>
+          {{ form.auth_header }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Model name (optional)</label>
+          {{ form.model_name }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Custom headers (optional, JSON)</label>
+        {{ form.custom_headers }}
+        <div class="form-help">e.g. {"X-Org-Id": "..."}</div>
+      </div>
+    </details>
 
     <details class="mb-16">
       <summary class="text-secondary" style="cursor:pointer; font-size:13.5px;">Advanced request settings (optional)</summary>
@@ -46,18 +77,18 @@
         <div class="form-group">
           <label class="form-label">Request field name</label>
           {{ form.request_field }}
-          <div class="form-help">The JSON key your endpoint expects, e.g. {"message": "..."}</div>
+          <div class="form-help">e.g. {"message": "..."}</div>
         </div>
         <div class="form-group">
           <label class="form-label">Response path</label>
           {{ form.response_path }}
-          <div class="form-help">Dot-path to the reply text, e.g. "response" or "data.reply"</div>
+          <div class="form-help">e.g. "response" or "data.reply"</div>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Authorization header</label>
-        {{ form.auth_header }}
-        <div class="form-help">Sent as the Authorization header on every test request, if your endpoint needs auth</div>
+        <label class="form-label">Custom request body template (optional, JSON)</label>
+        {{ form.request_body_template }}
+        <div class="form-help">Use {"{{prompt}}"} and {"{{model}}"} as placeholders</div>
       </div>
     </details>
 

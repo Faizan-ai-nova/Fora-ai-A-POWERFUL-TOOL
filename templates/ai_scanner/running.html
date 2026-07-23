@@ -59,7 +59,8 @@
   const spinnerEl = document.querySelector('[data-live-spinner]');
 
   const totalSteps = {{ test_count|add:1 }};
-  let lastLabel = '';
+  let lastRealLabel = '';
+  let lastAnyLabel = '';
   let simulatedStep = 0;
 
   // Canned narration used as a floor - even if the server is a single
@@ -78,8 +79,8 @@
   ];
 
   function addLine(text) {
-    if (!consoleEl || text === lastLabel) return;
-    lastLabel = text;
+    if (!consoleEl || text === lastAnyLabel) return;
+    lastAnyLabel = text;
     const line = document.createElement('div');
     line.className = 'log-line';
     line.textContent = '› ' + text;
@@ -87,13 +88,17 @@
     consoleEl.scrollTop = consoleEl.scrollHeight;
   }
 
-  function setProgress(step, total, label) {
+  function setProgress(step, total, label, { isReal = false } = {}) {
     const pct = total ? Math.min(100, Math.round((step / total) * 100)) : 0;
     if (barEl) barEl.style.width = pct + '%';
     if (pctEl) pctEl.textContent = ' · ' + pct + '%';
     if (stepLabelEl) stepLabelEl.textContent = `Step ${step} / ${total}`;
     if (headlineEl && label) headlineEl.textContent = label;
-    if (label) addLine(label);
+    // A real backend label that's still the same as last time just means
+    // "still on this step" - don't re-print it as a fresh log line even if
+    // simulated narration printed something else in between.
+    if (label && (!isReal || label !== lastRealLabel)) addLine(label);
+    if (isReal && label) lastRealLabel = label;
   }
 
   addLine('🧠 Thinking… preparing the attack simulation');
@@ -107,7 +112,7 @@
         if (res.ok) {
           const data = await res.json();
           if (data.current_step_label) {
-            setProgress(data.current_step, data.total_steps || totalSteps, data.current_step_label);
+            setProgress(data.current_step, data.total_steps || totalSteps, data.current_step_label, { isReal: true });
           }
           if (data.status === 'completed' || data.status === 'failed') {
             polling = false;

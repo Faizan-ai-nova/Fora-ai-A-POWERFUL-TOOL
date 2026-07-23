@@ -29,8 +29,20 @@
           {{ scan.target_name }}
           <div class="text-muted mono" style="font-size:11.5px; font-weight:400; margin-top:2px;">{{ scan.target_url|truncatechars:40 }}</div>
         </td>
-        <td><span class="badge badge-{{ scan.score_color }}">{{ scan.security_score }}/100</span></td>
-        <td>{{ scan.risk_emoji }} {{ scan.get_risk_level_display }}</td>
+        <td>
+          {% if scan.status == 'completed' %}
+            <span class="badge badge-{{ scan.score_color }}">{{ scan.security_score }}/100</span>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if scan.status == 'completed' %}
+            {{ scan.risk_emoji }} {{ scan.get_risk_level_display }}
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
         <td><span class="tag-pill">{{ scan.get_status_display }}</span></td>
         <td class="text-muted">{{ scan.created_at|date:"M d, Y" }}</td>
         <td>
