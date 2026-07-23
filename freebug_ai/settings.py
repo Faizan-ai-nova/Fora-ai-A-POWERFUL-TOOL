@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'accounts',
     'dashboard',
     'scanner',
+    'ai_scanner',
     'subscriptions',
     'payments',
     'reports',
@@ -150,7 +151,7 @@ STORAGES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Max upload sizes (code files & zip projects)
+# Max upload sizes (code files)
 MAX_UPLOAD_SIZE_MB = int(os.getenv('MAX_UPLOAD_SIZE_MB', 15))
 DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024
@@ -202,6 +203,11 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
 MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY', '')
+
+# Optional - free Hugging Face Inference API key used only as a bonus
+# second-opinion classifier inside the AI Security Scanner module. The
+# scanner works fully without it (regex rule engine only).
+HUGGINGFACE_API_KEY = os.getenv('HUGGINGFACE_API_KEY', '')
 
 # Payments - modular, placeholders until real keys are added
 # ── PayPal ──────────────────────────────────────────────────────────────────
