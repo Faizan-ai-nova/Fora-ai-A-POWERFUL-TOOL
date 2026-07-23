@@ -97,12 +97,18 @@ def execute_scan_view(request, scan_id):
         scan.status = AIScan.Status.FAILED
         scan.error_message = str(exc)
         scan.save(update_fields=['status', 'error_message'])
-        return JsonResponse({'ok': False, 'error': str(exc)})
+        return JsonResponse({
+            'ok': False, 'error': str(exc),
+            'redirect_url': reverse('ai_scanner:report', kwargs={'scan_id': scan.id}),
+        })
     except Exception as exc:  # noqa: BLE001 - a broken target must not crash the request
         scan.status = AIScan.Status.FAILED
         scan.error_message = str(exc)[:500]
         scan.save(update_fields=['status', 'error_message'])
-        return JsonResponse({'ok': False, 'error': 'The scan could not complete. The target may be unreachable.'})
+        return JsonResponse({
+            'ok': False, 'error': 'The scan could not complete. The target may be unreachable.',
+            'redirect_url': reverse('ai_scanner:report', kwargs={'scan_id': scan.id}),
+        })
 
     return JsonResponse({'ok': True, 'redirect_url': reverse('ai_scanner:report', kwargs={'scan_id': scan.id})})
 
