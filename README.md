@@ -1,17 +1,16 @@
 # Fora AI
 
-AI-powered security vulnerability scanner for developers — paste code, upload a file,
-or drop a whole ZIP project and get a security score, a severity-ranked issue list, and
-a fix for every finding.
+AI-powered security vulnerability scanner for developers — paste code or upload a file
+and get a security score, a severity-ranked issue list, and a fix for every finding.
 
 Built with Django, SQLite (dev) / PostgreSQL (prod-ready), and a pluggable AI engine that
 works out of the box with **zero API keys** (via a built-in static-analysis rule engine)
-and can be upgraded to use OpenAI, Gemini, Claude, or Groq for deeper analysis.
+and can be upgraded to use OpenAI, Gemini, or Claude for deeper analysis.
 
 ## Features
 
 - **Auth**: register, login, logout, forgot/reset password, profile
-- **Scanner**: paste code / upload a file / upload a ZIP project — detects SQL injection,
+- **Scanner**: paste code / upload a file — detects SQL injection,
   XSS, CSRF, hardcoded secrets, command injection, path traversal, insecure
   deserialization, weak auth logic, missing security headers, and more, mapped to OWASP
   Top 10 references
@@ -137,7 +136,7 @@ care about.
 ## Security notes
 
 - Custom `User` model with UUID primary keys
-- ZIP uploads are protected against zip-slip and zip-bomb attacks
+- GitHub push archives are protected against zip-slip and zip-bomb attacks
 - CSRF protection is on by default across every form
 - Production settings (`DEBUG=False`) automatically enable HSTS, secure cookies, and
   clickjacking protection — see `freebug_ai/settings.py`

@@ -1,36 +1,26 @@
 from django import forms
 
-# Curated models across all 4 providers, grouped so the person picks a
-# model directly instead of juggling a separate provider dropdown. Provider
-# is derived from whichever model is selected (see MODEL_PROVIDER_MAP).
+# Curated models across 3 providers, grouped so the person picks a model
+# directly instead of juggling a separate provider dropdown. Provider is
+# derived from whichever model is selected (see MODEL_PROVIDER_MAP).
 #
-# Groq's models work out of the box with this account's existing
-# GROQ_API_KEY, but the "Your API key" field below overrides that too, so
-# anyone can test with their own Groq key. OpenAI / Gemini / Claude models
-# always need the person's own key since none are configured server-side.
+# None of these are configured server-side - every model here needs the
+# person's own API key, entered in the "Your API key" field below. For any
+# other model/provider, use "Custom" and bring your own endpoint + key.
 MODEL_CHOICES = [
-    ('Groq — built-in key, or bring your own', [
-        ('llama-3.3-70b-versatile', 'Llama 3.3 70B — strongest general-purpose'),
-        ('llama-3.1-8b-instant', 'Llama 3.1 8B — fastest & cheapest'),
-        ('openai/gpt-oss-120b', 'GPT-OSS 120B — open-weight reasoning'),
-        ('openai/gpt-oss-20b', 'GPT-OSS 20B — very fast (~1000 tok/s)'),
-    ]),
-    ('OpenAI — needs your own API key', [
-        ('gpt-4o-mini', 'GPT-4o mini'),
-        ('gpt-4o', 'GPT-4o'),
-    ]),
     ('Google Gemini — needs your own API key', [
         ('gemini-1.5-flash', 'Gemini 1.5 Flash'),
-        ('gemini-1.5-pro', 'Gemini 1.5 Pro'),
     ]),
     ('Anthropic Claude — needs your own API key', [
         ('claude-sonnet-4-6', 'Claude Sonnet'),
-        ('claude-opus-4-8', 'Claude Opus'),
-        ('claude-fable-5', 'Claude Fable'),
         ('claude-haiku-4-5-20251001', 'Claude Haiku'),
     ]),
+    ('ChatGPT (OpenAI) — needs your own API key', [
+        ('gpt-4o', 'GPT-4o'),
+        ('gpt-4o-mini', 'GPT-4o mini'),
+    ]),
     ('Custom — bring any model', [
-        ('custom', '🔧 Custom model (fill in details below)'),
+        ('custom', '🔧 Custom model (any provider, your own API key)'),
     ]),
 ]
 
@@ -39,18 +29,11 @@ MODEL_CHOICES = [
 # separately. 'custom' is intentionally absent — its provider is decided by
 # custom_provider_type at submit time.
 MODEL_PROVIDER_MAP = {
-    'llama-3.3-70b-versatile': 'groq',
-    'llama-3.1-8b-instant': 'groq',
-    'openai/gpt-oss-120b': 'groq',
-    'openai/gpt-oss-20b': 'groq',
-    'gpt-4o-mini': 'openai',
-    'gpt-4o': 'openai',
     'gemini-1.5-flash': 'gemini',
-    'gemini-1.5-pro': 'gemini',
     'claude-sonnet-4-6': 'claude',
-    'claude-opus-4-8': 'claude',
-    'claude-fable-5': 'claude',
     'claude-haiku-4-5-20251001': 'claude',
+    'gpt-4o': 'openai',
+    'gpt-4o-mini': 'openai',
 }
 
 CUSTOM_PROVIDER_TYPE_CHOICES = [
@@ -72,7 +55,7 @@ class AgentTestForm(forms.Form):
     api_key = forms.CharField(
         required=False,
         widget=forms.PasswordInput(render_value=False, attrs={
-            'class': 'form-input', 'placeholder': 'Leave blank to use the built-in Groq key', 'autocomplete': 'off',
+            'class': 'form-input', 'placeholder': 'Your API key for the selected model', 'autocomplete': 'off',
         })
     )
 

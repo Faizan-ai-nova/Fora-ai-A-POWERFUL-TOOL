@@ -42,7 +42,7 @@ def new_test_view(request):
             custom_provider_type = cleaned.get('custom_provider_type', '') or 'openai_compatible'
             custom_api_base = cleaned.get('custom_api_base', '').strip()
         else:
-            provider = MODEL_PROVIDER_MAP.get(selected, 'groq')
+            provider = MODEL_PROVIDER_MAP.get(selected, 'openai')
             model_name = selected
 
         test = AgentTest.objects.create(

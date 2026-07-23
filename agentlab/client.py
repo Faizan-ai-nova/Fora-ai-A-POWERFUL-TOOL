@@ -19,35 +19,25 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 DEFAULT_MODELS = {
-    'groq': 'llama-3.3-70b-versatile',
     'openai': 'gpt-4o-mini',
     'gemini': 'gemini-1.5-flash',
     'claude': 'claude-sonnet-4-6',
 }
 
 # Per-model pricing (USD per 1M tokens) — used ONLY to show a ballpark
-# estimated cost in the UI, not wired to any billing system. Groq prices
-# verified against console.groq.com/docs/models; update as prices change.
+# estimated cost in the UI, not wired to any billing system.
 PRICING_PER_1M = {
-    ('groq', 'llama-3.3-70b-versatile'): {'input': 0.59, 'output': 0.79},
-    ('groq', 'llama-3.1-8b-instant'): {'input': 0.05, 'output': 0.08},
-    ('groq', 'openai/gpt-oss-120b'): {'input': 0.15, 'output': 0.60},
-    ('groq', 'openai/gpt-oss-20b'): {'input': 0.075, 'output': 0.30},
-    ('groq', 'openai/gpt-oss-safeguard-20b'): {'input': 0.075, 'output': 0.30},
-    ('groq', 'qwen/qwen3.6-27b'): {'input': 0.60, 'output': 3.00},
-    ('groq', 'meta-llama/llama-prompt-guard-2-86m'): {'input': 0.04, 'output': 0.04},
     ('openai', 'gpt-4o-mini'): {'input': 0.15, 'output': 0.60},
     ('openai', 'gpt-4o'): {'input': 2.50, 'output': 10.00},
     ('gemini', 'gemini-1.5-flash'): {'input': 0.075, 'output': 0.30},
     ('gemini', 'gemini-1.5-pro'): {'input': 1.25, 'output': 5.00},
     ('claude', 'claude-sonnet-4-6'): {'input': 3.00, 'output': 15.00},
-    ('claude', 'claude-3-5-haiku-20241022'): {'input': 0.80, 'output': 4.00},
+    ('claude', 'claude-haiku-4-5-20251001'): {'input': 0.80, 'output': 4.00},
 }
 
-# Fallback if a specific model isn't in the table above (e.g. groq/compound,
-# which doesn't publish per-token pricing) — per-provider ballpark rate.
+# Fallback if a specific model isn't in the table above — per-provider
+# ballpark rate.
 PROVIDER_FALLBACK_PRICING = {
-    'groq': {'input': 0.20, 'output': 0.40},
     'openai': {'input': 0.15, 'output': 0.60},
     'gemini': {'input': 0.075, 'output': 0.30},
     'claude': {'input': 3.00, 'output': 15.00},
@@ -56,7 +46,6 @@ PROVIDER_FALLBACK_PRICING = {
 REQUEST_TIMEOUT = 30
 
 PROVIDER_URLS = {
-    'groq': 'https://api.groq.com/openai/v1/chat/completions',
     'openai': 'https://api.openai.com/v1/chat/completions',
 }
 
@@ -67,7 +56,6 @@ class AgentTestError(Exception):
 
 def _api_key_for(provider: str) -> str:
     return {
-        'groq': getattr(settings, 'GROQ_API_KEY', ''),
         'openai': getattr(settings, 'OPENAI_API_KEY', ''),
         'gemini': getattr(settings, 'GEMINI_API_KEY', ''),
         'claude': getattr(settings, 'ANTHROPIC_API_KEY', ''),
@@ -83,7 +71,7 @@ def estimate_cost_usd(provider: str, model: str, prompt_tokens: int, completion_
 
 
 def _call_openai_compatible(url: str, api_key: str, model: str, system_prompt: str, input_prompt: str) -> dict:
-    """Works for Groq, OpenAI, and any other OpenAI-compatible /chat/completions endpoint."""
+    """Works for OpenAI and any OpenAI-compatible /chat/completions endpoint."""
     messages = []
     if system_prompt:
         messages.append({'role': 'system', 'content': system_prompt})
@@ -194,7 +182,7 @@ def run_agent_test(
 
     start = time.monotonic()
     try:
-        if provider in ('groq', 'openai'):
+        if provider == 'openai':
             result = _call_openai_compatible(PROVIDER_URLS[provider], api_key, model, system_prompt, input_prompt)
         elif provider == 'claude':
             result = _call_claude(api_key, model, system_prompt, input_prompt)

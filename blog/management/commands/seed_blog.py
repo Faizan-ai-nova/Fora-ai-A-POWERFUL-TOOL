@@ -337,10 +337,10 @@ obj = pickle.loads(data)</code></pre>
             'slug': 'introducing-ai-agent-testing',
             'category': cat_objs['product-updates'],
             'reading_time_minutes': 6,
-            'excerpt': 'Fora AI now lets you test prompts and AI agents directly \u2014 latency, token usage, estimated cost, and pass/fail matching, across Groq, OpenAI, Gemini, and Claude.',
+            'excerpt': 'Fora AI now lets you test prompts and AI agents directly \u2014 latency, token usage, estimated cost, and pass/fail matching, across Gemini, Claude, and ChatGPT.',
             'published_at': now,
             'body_html': '''
-<p>Fora AI started as a static code security scanner: paste in code, upload a file, or drop a ZIP, and get back a security score with a fix for every issue found. That part isn't going anywhere \u2014 it's still the core of the product. But it's no longer the whole product. Today we're shipping the first piece of something bigger: <strong>AI Agent Testing</strong>.</p>
+<p>Fora AI started as a static code security scanner: paste in code or upload a file, and get back a security score with a fix for every issue found. That part isn't going anywhere \u2014 it's still the core of the product. But it's no longer the whole product. Today we're shipping the first piece of something bigger: <strong>AI Agent Testing</strong>.</p>
 
 <h2>Why a security scanner is adding agent testing</h2>
 <p>More teams are shipping AI agents and LLM-powered features into production than ever, and a pattern keeps showing up: the code around the agent gets reviewed carefully, but the agent's actual behavior \u2014 what it says, how fast, at what cost, and whether it holds up across different models \u2014 doesn't get tested with the same rigor as everything else in the codebase. Quality has become one of the biggest blockers to shipping agents with confidence, and most of that gap comes down to a simple problem: teams aren't measuring agent output the way they measure everything else they ship.</p>
@@ -349,7 +349,7 @@ obj = pickle.loads(data)</code></pre>
 <h2>What you can do right now</h2>
 <p>Head to <strong>AI Engineering &rarr; Agent Testing</strong> in your dashboard. You'll get a simple form:</p>
 <ul>
-<li><strong>Pick a provider</strong> \u2014 Groq, OpenAI, Gemini, or Claude \u2014 and optionally override the exact model.</li>
+<li><strong>Pick a model</strong> \u2014 Gemini, Claude, ChatGPT, or a custom model of your own \u2014 and bring your own API key.</li>
 <li><strong>Write a system prompt</strong> (optional) \u2014 the instructions your agent would normally run with.</li>
 <li><strong>Write a test input</strong> \u2014 the message you want to send, exactly as a real user might phrase it.</li>
 <li><strong>Set an expected output</strong> (optional) \u2014 if you know roughly what the reply should contain, Fora AI checks for it automatically.</li>
