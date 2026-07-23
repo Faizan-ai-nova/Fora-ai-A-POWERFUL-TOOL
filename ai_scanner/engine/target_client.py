@@ -42,11 +42,84 @@ class NotAnAIEndpointError(TargetClientError):
     """
 
 
+def build_headers(auth_header: str = '', api_key: str = '', bearer_token: str = '',
+                   custom_headers: dict | None = None) -> dict:
+    """
+    Merges every supported credential/header source into one headers dict
+    for an outgoing test request. Precedence (later wins on conflicting
+    keys): auth_header (legacy single field) -> bearer_token -> api_key ->
+    custom_headers (most specific, always wins).
+    Never logs any of these values - callers must not either.
+    """
+    headers = {'Content-Type': 'application/json'}
+    if auth_header:
+        headers['Authorization'] = auth_header
+    if bearer_token:
+        headers['Authorization'] = bearer_token if bearer_token.lower().startswith('bearer ') else f'Bearer {bearer_token}'
+    if api_key:
+        # Most AI providers accept the key as a bearer token OR a
+        # dedicated header; send both so the scan works either way.
+        headers.setdefault('Authorization', f'Bearer {api_key}')
+        headers['X-API-Key'] = api_key
+    if custom_headers:
+        for key, value in custom_headers.items():
+            if key and value is not None:
+                headers[str(key)] = str(value)
+    return headers
+
+
+def build_payload(request_field: str, prompt: str, request_body_template: str = '',
+                   model_name: str = '') -> dict | str:
+    """
+    Builds the outgoing JSON body for a single test prompt. If a custom
+    request_body_template is configured, {{prompt}} and {{model}} are
+    substituted into it (as JSON-escaped values, so special characters in
+    attack prompts can't break the template's JSON structure) and the
+    result is parsed back to a dict. Falls back to the simple
+    {request_field: prompt} shape used by the MVP otherwise.
+    """
+    if request_body_template and request_body_template.strip():
+        prompt_json = json.dumps(prompt)[1:-1]  # escaped, without the surrounding quotes
+        model_json = json.dumps(model_name or '')[1:-1]
+        rendered = request_body_template.replace('{{prompt}}', prompt_json).replace('{{model}}', model_json)
+        try:
+            return json.loads(rendered)
+        except ValueError:
+            # Template didn't render to valid JSON - fall back rather than crash the scan.
+            pass
+    payload = {request_field or 'message': prompt}
+    if model_name:
+        payload.setdefault('model', model_name)
+    return payload
+
+
+class DNSResolutionError(TargetClientError):
+    """Raised when the hostname could not be resolved at all (typo, dead domain,
+    or a transient network blip) - distinct from a host that resolved fine but
+    points at a blocked private/internal address."""
+
+
+def _resolve_or_none(hostname: str, attempts: int = 2, delay_seconds: float = 0.4):
+    """Tries DNS resolution up to `attempts` times to smooth over transient
+    blips, returning the getaddrinfo result list, or None if every attempt
+    failed to resolve at all."""
+    last_error = None
+    for i in range(attempts):
+        try:
+            return socket.getaddrinfo(hostname, None)
+        except socket.gaierror as exc:
+            last_error = exc
+            if i < attempts - 1:
+                time.sleep(delay_seconds)
+    return None
+
+
 def _is_private_or_blocked(hostname: str) -> bool:
-    try:
-        infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror:
-        return True
+    infos = _resolve_or_none(hostname)
+    if infos is None:
+        raise DNSResolutionError(
+            f"Could not resolve '{hostname}'. Double-check the URL is correct and reachable."
+        )
     for info in infos:
         try:
             ip = ipaddress.ip_address(info[4][0])
@@ -71,7 +144,9 @@ def validate_target_url(url: str) -> None:
         raise TargetClientError('Scanning private, internal, or reserved network addresses is not allowed.')
 
 
-def probe_target(target_url: str, request_field: str, response_path: str, auth_header: str = '') -> dict:
+def probe_target(target_url: str, request_field: str, response_path: str, auth_header: str = '',
+                  api_key: str = '', bearer_token: str = '', custom_headers: dict | None = None,
+                  request_body_template: str = '', model_name: str = '') -> dict:
     """
     Pre-flight check run once before the attack suite: sends a single
     harmless, clearly-labelled probe message and inspects how the target
@@ -94,10 +169,8 @@ def probe_target(target_url: str, request_field: str, response_path: str, auth_h
         'This is an automated pre-flight connectivity check, not a real user message. '
         f'Reply with only this exact token and nothing else: {nonce}'
     )
-    headers = {'Content-Type': 'application/json'}
-    if auth_header:
-        headers['Authorization'] = auth_header
-    payload = {request_field or 'message': probe_prompt}
+    headers = build_headers(auth_header, api_key, bearer_token, custom_headers)
+    payload = build_payload(request_field, probe_prompt, request_body_template, model_name)
 
     parsed_path = urlparse(target_url).path.lower()
     url_looks_openai_shaped = any(hint in parsed_path for hint in OPENAI_COMPATIBLE_PATH_HINTS)
@@ -181,18 +254,49 @@ def _extract_path(data, path: str):
     return current if current is None else str(current)
 
 
+def _extract_openai_compatible(data):
+    """Pulls reply text out of an OpenAI-style {"choices": [...]} response, or None."""
+    if not isinstance(data, dict) or not isinstance(data.get('choices'), list) or not data['choices']:
+        return None
+    first = data['choices'][0]
+    if not isinstance(first, dict):
+        return None
+    message = first.get('message')
+    if isinstance(message, dict) and message.get('content'):
+        return str(message['content'])
+    if first.get('text'):
+        return str(first['text'])
+    delta = first.get('delta')
+    if isinstance(delta, dict) and delta.get('content'):
+        return str(delta['content'])
+    return None
+
+
+def _extract_reply_text(data, response_path: str):
+    """
+    Tries the configured response_path first (works for custom/plain JSON
+    chat endpoints), then falls back to the OpenAI-compatible
+    choices[].message.content shape - this fallback matters because
+    probe_target can detect an OpenAI-compatible target while
+    response_path is still left at its 'response' default.
+    """
+    text = _extract_path(data, response_path or 'response')
+    if text and text.strip():
+        return text
+    return _extract_openai_compatible(data)
+
+
 def send_prompt(target_url: str, request_field: str, response_path: str, prompt: str,
-                 auth_header: str = '', timeout: int = REQUEST_TIMEOUT_SECONDS) -> dict:
+                 auth_header: str = '', timeout: int = REQUEST_TIMEOUT_SECONDS,
+                 api_key: str = '', bearer_token: str = '', custom_headers: dict | None = None,
+                 request_body_template: str = '', model_name: str = '') -> dict:
     """
     POSTs a single test prompt to the target AI endpoint as JSON and
     extracts its reply text. Always returns a dict - never raises - so a
     single unreachable/broken target never aborts the rest of the scan.
     """
-    headers = {'Content-Type': 'application/json'}
-    if auth_header:
-        headers['Authorization'] = auth_header
-
-    payload = {request_field or 'message': prompt}
+    headers = build_headers(auth_header, api_key, bearer_token, custom_headers)
+    payload = build_payload(request_field, prompt, request_body_template, model_name)
     started = time.monotonic()
 
     try:
@@ -214,7 +318,7 @@ def send_prompt(target_url: str, request_field: str, response_path: str, prompt:
             text = raw.decode('utf-8', errors='ignore')[:2000]
             return {'ok': True, 'text': text, 'elapsed_ms': elapsed_ms, 'error': ''}
 
-        text = _extract_path(data, response_path or 'response')
+        text = _extract_reply_text(data, response_path)
         if text is None:
             text = str(data)[:2000]
         return {'ok': True, 'text': text, 'elapsed_ms': elapsed_ms, 'error': ''}
