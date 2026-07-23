@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .engine.prompts import TEST_SUITE
+from .engine.prompts import TEST_SUITE, build_test_suite
 from .engine.runner import run_scan
 from .engine.target_client import NotAnAIEndpointError, TargetClientError, validate_target_url
 from .forms import NewAIScanForm
@@ -54,14 +54,29 @@ def start_scan_view(request):
         messages.error(request, str(exc))
         return redirect('ai_scanner:new_scan')
 
-    scan = AIScan.objects.create(
+    scan_kwargs = dict(
         user=request.user,
         target_name=form.cleaned_data.get('target_name') or 'Untitled AI',
         target_url=form.cleaned_data['target_url'],
+        model_name=form.cleaned_data.get('model_name', ''),
         request_field=form.cleaned_data.get('request_field') or 'message',
         response_path=form.cleaned_data.get('response_path') or 'response',
-        auth_header=form.cleaned_data.get('auth_header', ''),
+        request_body_template=form.cleaned_data.get('request_body_template', ''),
     )
+    # Only pass target_type through if the deployed AIScan model actually has
+    # that field - avoids a hard crash if models.py on this environment
+    # doesn't have it yet (schema drift between environments).
+    if any(f.name == 'target_type' for f in AIScan._meta.get_fields()):
+        scan_kwargs['target_type'] = form.cleaned_data.get('target_type') or 'auto'
+    scan = AIScan(**scan_kwargs)
+    # Credentials are encrypted before the row is ever saved - see
+    # AIScan.set_api_key/set_bearer_token/set_custom_headers/set_auth_header
+    # and engine/secret_store.py. Nothing here is logged.
+    scan.set_auth_header(form.cleaned_data.get('auth_header', ''))
+    scan.set_api_key(form.cleaned_data.get('api_key', ''))
+    scan.set_bearer_token(form.cleaned_data.get('bearer_token', ''))
+    scan.set_custom_headers(form.cleaned_data.get('custom_headers') or {})
+    scan.save()
     return redirect('ai_scanner:running', scan_id=scan.id)
 
 
@@ -166,12 +181,22 @@ def rerun_scan_view(request, scan_id):
         return guard
 
     old = get_object_or_404(AIScan, id=scan_id, user=request.user)
-    new_scan = AIScan.objects.create(
+    rerun_kwargs = dict(
         user=request.user,
         target_name=old.target_name,
         target_url=old.target_url,
+        model_name=old.model_name,
         request_field=old.request_field,
         response_path=old.response_path,
         auth_header=old.auth_header,
+        request_body_template=old.request_body_template,
+        # Encrypted credential blobs can be copied as-is - they were
+        # already encrypted, not re-derived from plaintext here.
+        api_key_encrypted=old.api_key_encrypted,
+        bearer_token_encrypted=old.bearer_token_encrypted,
+        custom_headers_encrypted=old.custom_headers_encrypted,
     )
+    if any(f.name == 'target_type' for f in AIScan._meta.get_fields()):
+        rerun_kwargs['target_type'] = old.target_type
+    new_scan = AIScan.objects.create(**rerun_kwargs)
     return redirect('ai_scanner:running', scan_id=new_scan.id)
