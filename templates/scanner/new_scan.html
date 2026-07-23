@@ -12,7 +12,6 @@
   <div class="flex gap-8 mb-24" style="border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
     <button type="button" class="btn btn-secondary btn-sm active" data-tab-btn="paste">📋 Paste Code</button>
     <button type="button" class="btn btn-ghost btn-sm" data-tab-btn="file">📄 Upload File</button>
-    <button type="button" class="btn btn-ghost btn-sm" data-tab-btn="zip">📦 Upload ZIP Project</button>
   </div>
 
   <!-- Paste code -->
@@ -58,25 +57,6 @@
     </form>
   </div>
 
-  <!-- Upload ZIP -->
-  <div data-tab-panel="zip" style="display:none;">
-    <form method="post" action="{% url 'scanner:scan_zip' %}" enctype="multipart/form-data" data-scan-form>
-      {% csrf_token %}
-      <div class="form-group">
-        <label class="form-label">Project name (optional)</label>
-        {{ zip_form.project_name }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">ZIP file</label>
-        <div class="glass-card" data-dropzone style="padding: 40px; text-align:center; cursor:pointer; border-style:dashed;">
-          <div style="font-size:32px;">📦</div>
-          <div data-dropzone-label class="mt-8">Click or drag your project .zip here (max 15MB)</div>
-          {{ zip_form.zip_file }}
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary btn-lg mt-16">🔍 Scan Project</button>
-    </form>
-  </div>
 </div>
 
 <style>

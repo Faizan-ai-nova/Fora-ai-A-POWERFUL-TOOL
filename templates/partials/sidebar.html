@@ -16,6 +16,9 @@
   <a href="{% url 'dashboard:home' %}" class="sidebar-link {% if request.resolver_match.url_name == 'home' and request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
     <span>📊</span> Dashboard
   </a>
+  <a href="{% url 'ai_scanner:new_scan' %}" class="sidebar-link {% if request.resolver_match.app_name == 'ai_scanner' %}active{% endif %}">
+    <span>🤖</span> AI Security Scanner
+  </a>
   <a href="{% url 'scanner:new_scan' %}" class="sidebar-link {% if request.resolver_match.app_name == 'scanner' %}active{% endif %}">
     <span>🔍</span> New Scan
   </a>
