@@ -8,7 +8,7 @@ from django.views.decorators.http import require_POST
 
 from .engine.prompts import TEST_SUITE
 from .engine.runner import run_scan
-from .engine.target_client import TargetClientError, validate_target_url
+from .engine.target_client import NotAnAIEndpointError, TargetClientError, validate_target_url
 from .forms import NewAIScanForm
 from .models import AIScan
 
@@ -90,6 +90,14 @@ def execute_scan_view(request, scan_id):
     try:
         run_scan(scan)
         request.user.consume_scan()
+    except NotAnAIEndpointError as exc:
+        # Target answered, but the pre-flight probe determined it isn't an
+        # AI/chat endpoint (plain website, non-chat REST API, etc). Don't
+        # charge the user's scan quota for a target that was never scannable.
+        scan.status = AIScan.Status.FAILED
+        scan.error_message = str(exc)
+        scan.save(update_fields=['status', 'error_message'])
+        return JsonResponse({'ok': False, 'error': str(exc)})
     except Exception as exc:  # noqa: BLE001 - a broken target must not crash the request
         scan.status = AIScan.Status.FAILED
         scan.error_message = str(exc)[:500]
