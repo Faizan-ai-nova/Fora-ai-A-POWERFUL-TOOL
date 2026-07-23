@@ -41,7 +41,17 @@ class AIScan(models.Model):
         help_text='Optional Authorization header value sent with every test request'
     )
 
+    class TargetFormat(models.TextChoices):
+        UNKNOWN = 'unknown', 'Unknown'
+        OPENAI_COMPATIBLE = 'openai_compatible', 'OpenAI-compatible chat completions'
+        CUSTOM_JSON_CHAT = 'custom_json_chat', 'Custom JSON chat endpoint'
+        PLAIN_TEXT_CHAT = 'plain_text_chat', 'Plain-text chat endpoint'
+
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    target_format = models.CharField(
+        max_length=20, choices=TargetFormat.choices, default=TargetFormat.UNKNOWN,
+        help_text='What the pre-flight probe detected the target endpoint to be.'
+    )
     current_step = models.PositiveSmallIntegerField(default=0)
     total_steps = models.PositiveSmallIntegerField(default=0)
     current_step_label = models.CharField(max_length=255, blank=True)
