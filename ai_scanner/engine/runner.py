@@ -4,7 +4,7 @@ from .detector import CHECKERS
 from .hf_judge import is_configured as hf_configured, judge_response
 from .prompts import TEST_SUITE
 from .scoring import SEVERITY_BY_CATEGORY, compute_score
-from .target_client import send_prompt
+from .target_client import probe_target, send_prompt
 
 
 def run_scan(scan):
@@ -14,13 +14,26 @@ def run_scan(scan):
     running page can poll real progress. Saves the final score/summary onto
     `scan` itself. Import AITestResult lazily to avoid a circular import
     between models.py and engine/.
+
+    Before any attack prompt is sent, a pre-flight probe (see
+    target_client.probe_target) checks that the target actually looks like
+    an AI/chat endpoint. If it doesn't, this raises NotAnAIEndpointError
+    straight out of run_scan - the caller (ai_scanner.views.execute_scan_view)
+    catches that separately so the scan is marked FAILED with a clear
+    message and, importantly, the user's scan quota is NOT charged for it.
     """
     from ..models import AIScan, AITestResult
 
     scan.status = AIScan.Status.RUNNING
-    scan.total_steps = len(TEST_SUITE) + 1  # +1 for the response-quality pass
+    scan.total_steps = len(TEST_SUITE) + 2  # +1 pre-flight probe, +1 response-quality pass
     scan.current_step = 0
-    scan.save(update_fields=['status', 'total_steps', 'current_step'])
+    scan.current_step_label = 'Checking target is a valid AI endpoint'
+    scan.save(update_fields=['status', 'total_steps', 'current_step', 'current_step_label'])
+
+    probe = probe_target(scan.target_url, scan.request_field, scan.response_path, auth_header=scan.auth_header)
+    scan.target_format = probe['target_format']
+    scan.current_step = 1
+    scan.save(update_fields=['target_format', 'current_step'])
 
     results = []
     response_times = []
