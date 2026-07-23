@@ -5,12 +5,12 @@
 <div class="mb-24">
   <h1 style="font-size: 26px;">🧪 AI Agent Testing</h1>
   <p class="text-secondary mt-8">
-    Test AI agents across Groq, OpenAI, Gemini, Claude, and custom models in one place.
+    Test prompts against Gemini, Claude, ChatGPT, or any custom model — one request, full results.
   </p>
 </div>
 
 <div class="glass-card padded">
-  <form method="post" action="{% url 'agentlab:new_test' %}">
+  <form method="post" action="{% url 'agentlab:new_test' %}" data-scan-form data-loading-text="Running your agent test…">
     {% csrf_token %}
 
     <div class="grid-2">
@@ -22,28 +22,25 @@
       <div class="form-group">
         <label class="form-label">Model</label>
         {{ form.model_name }}
-        <div class="form-help">
-          Choose any supported model provider and run your AI agent tests with ease.
-        </div>
+        <div class="form-help">Pick a model, or choose Custom to bring your own.</div>
       </div>
     </div>
 
     <div class="form-group">
       <label class="form-label">
-        API Key <span class="text-muted" style="font-weight:400;">(optional)</span>
+        API Key <span class="text-muted" style="font-weight:400;">(required for the selected model)</span>
       </label>
       {{ form.api_key }}
       <div class="form-help">
-        Enter your API key here. Your key is used only for this test session and is never stored.
+        Used only for this test run and never stored.
       </div>
     </div>
 
-    <div class="glass-card padded"
-         style="background: rgba(255,255,255,0.02); margin-bottom: 20px;">
+    <div class="glass-card padded" data-custom-model-fields
+         style="background: rgba(255,255,255,0.02); margin-bottom: 20px; display:none;">
 
-      <div class="text-muted mb-8"
-           style="font-size:12.5px; font-weight:600;">
-        Only fill these fields if you selected "Custom model" above.
+      <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600;">
+        Custom model details
       </div>
 
       <div class="form-group">
@@ -65,6 +62,10 @@
         </label>
         {{ form.custom_api_base }}
       </div>
+    </div>
+
+    <div style="border-top: 1px solid var(--border-glass); margin: 20px 0 16px; padding-top: 16px;">
+      <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600;">Prompt</div>
     </div>
 
     <div class="form-group">
@@ -97,4 +98,18 @@
     📈 View Test History
   </a>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modelSelect = document.getElementById('id_model_name');
+    const customFields = document.querySelector('[data-custom-model-fields]');
+    if (!modelSelect || !customFields) return;
+
+    const syncCustomFields = () => {
+      customFields.style.display = modelSelect.value === 'custom' ? 'block' : 'none';
+    };
+    syncCustomFields();
+    modelSelect.addEventListener('change', syncCustomFields);
+  });
+</script>
 {% endblock %}

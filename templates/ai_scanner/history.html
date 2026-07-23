@@ -1,0 +1,73 @@
+{% extends "partials/app_base.html" %}
+{% block title %}AI Scan History — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <h1 style="font-size: 26px;">AI Security Scan history</h1>
+    <p class="text-secondary mt-8">Every AI chatbot or agent you've scanned.</p>
+  </div>
+  <a href="{% url 'ai_scanner:new_scan' %}" class="btn btn-primary">+ New AI Scan</a>
+</div>
+
+<div class="glass-card" style="overflow-x:auto;">
+  {% if page_obj.object_list %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Target</th>
+        <th>Score</th>
+        <th>Risk</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for scan in page_obj.object_list %}
+      <tr>
+        <td style="font-weight:600;">
+          {{ scan.target_name }}
+          <div class="text-muted mono" style="font-size:11.5px; font-weight:400; margin-top:2px;">{{ scan.target_url|truncatechars:40 }}</div>
+        </td>
+        <td><span class="badge badge-{{ scan.score_color }}">{{ scan.security_score }}/100</span></td>
+        <td>{{ scan.risk_emoji }} {{ scan.get_risk_level_display }}</td>
+        <td><span class="tag-pill">{{ scan.get_status_display }}</span></td>
+        <td class="text-muted">{{ scan.created_at|date:"M d, Y" }}</td>
+        <td>
+          <div class="flex gap-8">
+            {% if scan.status == 'completed' or scan.status == 'failed' %}
+              <a href="{% url 'ai_scanner:report' scan.id %}" class="btn btn-secondary btn-sm">View</a>
+            {% else %}
+              <a href="{% url 'ai_scanner:running' scan.id %}" class="btn btn-secondary btn-sm">Watch</a>
+            {% endif %}
+            <form method="post" action="{% url 'ai_scanner:rerun_scan' scan.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-ghost btn-sm">🔁</button>
+            </form>
+            <form method="post" action="{% url 'ai_scanner:delete_scan' scan.id %}" onsubmit="return confirm('Delete this scan?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--danger);">🗑</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🤖</div>
+      <p>No AI scans yet.</p>
+      <a href="{% url 'ai_scanner:new_scan' %}" class="btn btn-primary mt-16">Run your first AI security scan</a>
+    </div>
+  {% endif %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="flex gap-8 mt-24" style="justify-content:center;">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm">← Prev</a>{% endif %}
+  <span class="text-muted" style="align-self:center; font-size:13.5px;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm">Next →</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -30,7 +30,7 @@
         Ship code that doesn't <span class="text-gradient">get you hacked.</span>
       </h1>
       <p class="text-secondary" style="font-size: clamp(15.5px,3.5vw,18px); line-height: 1.6;">
-        Paste code, upload a file, or drop a whole ZIP project. Fora AI scans your
+        Paste code or upload a file. Fora AI scans your
         Python, Django, JavaScript, HTML and CSS for SQL injection, XSS, hardcoded
         secrets, and every OWASP Top 10 issue — with a fix for each one.
       </p>
@@ -46,7 +46,6 @@
         <span class="lang-pill">JavaScript</span>
         <span class="lang-pill">HTML</span>
         <span class="lang-pill">CSS</span>
-        <span class="lang-pill">.zip project</span>
       </div>
     </div>
 
@@ -112,22 +111,22 @@ def save_settings(request):
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/><path d="M8 3H5a2 2 0 0 0-2 2v3"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
         </div>
-        <h3>Whole-Project Scans</h3>
-        <p>Upload a ZIP of your Django project and scan every file in one pass.</p>
+        <h3>GitHub Integration</h3>
+        <p>Connect a repo and every push is scanned automatically — no manual uploads needed.</p>
       </div>
       <div class="glass-card feature-tile">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
         </div>
         <h3>AI-Ready Engine</h3>
-        <p>Pluggable architecture for Gemini, OpenAI, Claude, or Groq — bring your own key.</p>
+        <p>Pluggable architecture for Gemini, OpenAI, or Claude — bring your own key.</p>
       </div>
       <div class="glass-card feature-tile">
         <div class="feature-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6.5a2 2 0 0 1-.4 1.2L5 17a2 2 0 0 0 1.6 3.2h10.8a2 2 0 0 0 1.6-3.2l-4.6-6.3a2 2 0 0 1-.4-1.2V3"/></svg>
         </div>
         <h3>AI Agent Testing <span class="tag-pill" style="font-size:11px; vertical-align:middle;">New</span></h3>
-        <p>Test prompts against Groq, OpenAI, Gemini &amp; Claude side by side — latency, token usage, estimated cost, and pass/fail in one run.</p>
+        <p>Test prompts against Gemini, OpenAI &amp; Claude side by side — latency, token usage, estimated cost, and pass/fail in one run.</p>
       </div>
     </div>
   </div>
@@ -139,8 +138,8 @@ def save_settings(request):
     <div class="step-flow">
       <div class="step-tile">
         <div class="step-num">1</div>
-        <h3>Paste, upload, or drop a ZIP</h3>
-        <p>Bring code from anywhere — a single file or an entire project.</p>
+        <h3>Paste or upload a file</h3>
+        <p>Bring code from anywhere — paste a snippet or upload a source file.</p>
       </div>
       <div class="step-tile">
         <div class="step-num">2</div>
@@ -196,7 +195,7 @@ def save_settings(request):
         </div>
       </div>
       <div class="glass-card testimonial-card">
-        <p class="testimonial-quote">The ZIP scan on our whole Django project surfaced hardcoded keys we'd completely forgotten about.</p>
+        <p class="testimonial-quote">Connecting our repo meant every push got scanned automatically — surfaced hardcoded keys we'd completely forgotten about.</p>
         <div class="testimonial-person">
           <div class="testimonial-avatar">A</div>
           <div><div class="testimonial-name">Aditya</div><div class="testimonial-role">Team Lead</div></div>
@@ -229,7 +228,7 @@ def save_settings(request):
           Can I scan a whole project, not just one file?
           <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
         </button>
-        <div class="faq-answer"><div class="faq-answer-inner">Yes — upload a ZIP of your Django project and Fora AI scans every file in one pass.</div></div>
+        <div class="faq-answer"><div class="faq-answer-inner">Yes — connect a GitHub repo and Fora AI automatically scans every push, file by file.</div></div>
       </div>
       <div class="faq-item">
         <button class="faq-question" data-faq-toggle>

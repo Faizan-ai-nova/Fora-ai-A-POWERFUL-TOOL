@@ -1,0 +1,160 @@
+{% extends "partials/app_base.html" %}
+{% block title %}Scanning {{ scan.target_name }} — Fora AI{% endblock %}
+{% block app_content %}
+<form style="display:none;">{% csrf_token %}</form>
+<div class="mb-24">
+  <h1 style="font-size: 26px;">🤖 Scanning {{ scan.target_name }}</h1>
+  <p class="text-secondary mt-8 mono" style="font-size:13px;">{{ scan.target_url }}</p>
+</div>
+
+<div class="glass-card" style="overflow:hidden;">
+  <div class="frame-header">
+    <span class="frame-dot" style="background:#f43f5e;"></span>
+    <span class="frame-dot" style="background:#f59e0b;"></span>
+    <span class="frame-dot" style="background:#10b981;"></span>
+    <span class="text-muted mono" style="font-size:12.5px; margin-left:8px;">fora-ai — ai-security-scanner — live</span>
+  </div>
+
+  <div style="padding: 24px 28px;">
+    <div class="flex gap-12" style="align-items:center;">
+      <div class="spinner" data-live-spinner></div>
+      <div style="font-weight:600; font-size:15px;" data-live-headline>Connecting to target…</div>
+    </div>
+
+    <div class="mt-24" style="height:8px; border-radius:999px; background:var(--bg-glass); overflow:hidden;">
+      <div data-progress-bar style="height:100%; width:4%; background:var(--accent-gradient); transition:width 0.5s ease;"></div>
+    </div>
+    <div class="flex-between mt-8">
+      <span class="text-muted" style="font-size:12px;" data-progress-label>Step 0 / {{ test_count|add:1 }}</span>
+      <span class="text-muted" style="font-size:12px;" data-progress-pct>0%</span>
+    </div>
+
+    <div class="mono mt-24" data-log-console
+         style="background:var(--bg-elevated); border:1px solid var(--border-glass); border-radius:var(--radius-lg); padding:16px 20px; font-size:13px; line-height:1.9; max-height:320px; overflow-y:auto;">
+    </div>
+  </div>
+</div>
+
+<p class="text-muted mt-16" style="font-size:12.5px;">This page updates automatically — no need to refresh. Running each attack test one at a time can take a minute or two.</p>
+
+<style>
+  [data-log-console] .log-line { opacity: 0; animation: log-in 0.35s ease forwards; }
+  @keyframes log-in { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: translateY(0); } }
+  [data-live-spinner] { width:18px; height:18px; }
+</style>
+
+<script>
+(() => {
+  const scanId = "{{ scan.id }}";
+  const executeUrl = "{% url 'ai_scanner:execute_scan' scan.id %}";
+  const statusUrl = "{% url 'ai_scanner:scan_status' scan.id %}";
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value
+    || (document.cookie.match(/csrftoken=([^;]+)/) || [])[1];
+
+  const consoleEl = document.querySelector('[data-log-console]');
+  const barEl = document.querySelector('[data-progress-bar]');
+  const pctEl = document.querySelector('[data-progress-pct]');
+  const stepLabelEl = document.querySelector('[data-progress-label]');
+  const headlineEl = document.querySelector('[data-live-headline]');
+
+  const totalSteps = {{ test_count|add:1 }};
+  let lastLabel = '';
+  let simulatedStep = 0;
+
+  // Canned narration used as a floor - even if the server is a single
+  // sync worker and can't answer status polls mid-request, the log still
+  // advances at a believable pace instead of sitting frozen.
+  const narration = [
+    '🧠 Thinking… preparing the attack simulation',
+    '🔌 Establishing connection to target endpoint',
+    '⚔️ Launching prompt injection tests',
+    '🔓 Attempting jailbreak bypasses',
+    '📄 Probing for system prompt leakage',
+    '🔑 Scanning responses for sensitive data',
+    '☣️ Checking for harmful content generation',
+    '⚡ Measuring response time & reliability',
+    '📊 Compiling the security report',
+  ];
+
+  function addLine(text) {
+    if (!consoleEl || text === lastLabel) return;
+    lastLabel = text;
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.textContent = '› ' + text;
+    consoleEl.appendChild(line);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  function setProgress(step, total, label) {
+    const pct = total ? Math.min(100, Math.round((step / total) * 100)) : 0;
+    if (barEl) barEl.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (stepLabelEl) stepLabelEl.textContent = `Step ${step} / ${total}`;
+    if (headlineEl && label) headlineEl.textContent = label;
+    if (label) addLine(label);
+  }
+
+  addLine('🧠 Thinking… preparing the attack simulation');
+
+  // Real progress, polled from the backend while the scan runs.
+  let polling = true;
+  async function poll() {
+    while (polling) {
+      try {
+        const res = await fetch(statusUrl, { credentials: 'same-origin' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.current_step_label) {
+            setProgress(data.current_step, data.total_steps || totalSteps, data.current_step_label);
+          }
+          if (data.status === 'completed' || data.status === 'failed') {
+            polling = false;
+            break;
+          }
+        }
+      } catch (e) { /* keep trying */ }
+      await new Promise(r => setTimeout(r, 700));
+    }
+  }
+  poll();
+
+  // Simulated floor - only advances the log/bar if real polling hasn't
+  // moved it further already, so it never contradicts real data.
+  const simTimer = setInterval(() => {
+    simulatedStep++;
+    if (simulatedStep >= narration.length) { clearInterval(simTimer); return; }
+    const impliedStep = Math.min(totalSteps, Math.round((simulatedStep / narration.length) * totalSteps));
+    if (barEl && parseFloat(barEl.style.width) < (impliedStep / totalSteps) * 100) {
+      setProgress(impliedStep, totalSteps, narration[simulatedStep]);
+    } else {
+      addLine(narration[simulatedStep]);
+    }
+  }, 1800);
+
+  // Kick off the actual scan.
+  fetch(executeUrl, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'X-CSRFToken': csrfToken },
+  })
+    .then(r => r.json())
+    .then(data => {
+      polling = false;
+      clearInterval(simTimer);
+      if (data.ok && data.redirect_url) {
+        setProgress(totalSteps, totalSteps, '✅ Scan complete — building your report');
+        setTimeout(() => { window.location.href = data.redirect_url; }, 500);
+      } else {
+        if (headlineEl) headlineEl.textContent = '⚠️ ' + (data.error || 'The scan could not complete.');
+        addLine('⚠️ ' + (data.error || 'The scan could not complete.'));
+      }
+    })
+    .catch(() => {
+      polling = false;
+      clearInterval(simTimer);
+      if (headlineEl) headlineEl.textContent = '⚠️ Connection lost — please refresh to check status.';
+    });
+})();
+</script>
+{% endblock %}

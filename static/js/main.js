@@ -138,6 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-scan-form]').forEach((form) => {
     form.addEventListener('submit', () => {
       const overlay = document.getElementById('loading-overlay');
+      const overlayText = document.getElementById('loading-overlay-text');
+      if (overlayText) {
+        overlayText.textContent = form.dataset.loadingText || 'Scanning your code for vulnerabilities…';
+      }
       if (overlay) overlay.classList.remove('hidden');
     });
   });

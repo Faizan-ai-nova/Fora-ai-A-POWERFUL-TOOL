@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 'order': 0,
                 'features': [
                     '10 AI security scans',
-                    'Paste, file & ZIP scanning',
+                    'Paste & file scanning',
                     'Security score & severity breakdown',
                     'Fix recommendations for every issue',
                 ],
@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 'order': 1,
                 'features': [
                     'Unlimited AI security scans',
-                    'Paste, file & ZIP scanning',
+                    'Paste & file scanning',
                     'Full scan history & reports',
                     'Priority support',
                 ],

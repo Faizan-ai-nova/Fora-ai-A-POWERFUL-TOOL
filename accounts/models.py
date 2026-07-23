@@ -77,22 +77,15 @@ class User(AbstractUser):
             self.save(update_fields=['scans_remaining', 'total_scans_used'])
 
     def can_run_agent_test(self):
-        """Unlimited plans bypass the agent_tests_remaining counter entirely."""
-        active_sub = self.subscriptions.filter(status='active').order_by('-created_at').first()
-        if active_sub and active_sub.plan.is_unlimited:
-            return True
-        return self.agent_tests_remaining > 0
+        """AI Engineering / Agent Testing (agentlab) is free forever for every
+        user - it is never gated behind the scan quota or a paid plan."""
+        return True
 
     def consume_agent_test(self):
-        active_sub = self.subscriptions.filter(status='active').order_by('-created_at').first()
-        if active_sub and active_sub.plan.is_unlimited:
-            self.total_agent_tests_used += 1
-            self.save(update_fields=['total_agent_tests_used'])
-            return
-        if self.agent_tests_remaining > 0:
-            self.agent_tests_remaining -= 1
-            self.total_agent_tests_used += 1
-            self.save(update_fields=['agent_tests_remaining', 'total_agent_tests_used'])
+        """Still tracked for stats/history, but never decremented - agent
+        testing has no quota and can never become a paid feature."""
+        self.total_agent_tests_used += 1
+        self.save(update_fields=['total_agent_tests_used'])
 
 
 class PasswordResetToken(models.Model):

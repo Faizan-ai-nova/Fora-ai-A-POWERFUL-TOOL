@@ -1,0 +1,135 @@
+{% extends "partials/app_base.html" %}
+{% block title %}{{ scan.target_name }} — AI Security Report — Fora AI{% endblock %}
+{% block app_content %}
+<div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+  <div>
+    <a href="{% url 'ai_scanner:history' %}" class="text-muted" style="font-size:13.5px;">← Back to AI scan history</a>
+    <h1 style="font-size: 26px; margin-top:8px;">{{ scan.target_name }}</h1>
+    <p class="text-secondary mt-8 mono" style="font-size:13px;">{{ scan.target_url }}</p>
+    <p class="text-muted mt-8" style="font-size:12.5px;">Scanned {{ scan.created_at|date:"M d, Y H:i" }}</p>
+  </div>
+  <div class="flex gap-8">
+    <form method="post" action="{% url 'ai_scanner:rerun_scan' scan.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary btn-sm">🔁 Re-run scan</button>
+    </form>
+    <a href="{% url 'ai_scanner:new_scan' %}" class="btn btn-primary btn-sm">+ New AI Scan</a>
+  </div>
+</div>
+
+{% if scan.status == 'failed' %}
+<div class="glass-card padded mb-24" style="border-color: var(--danger);">
+  <h3 style="font-size:15px; color:var(--danger);">Scan failed</h3>
+  <p class="text-secondary mt-8" style="font-size:14px;">{{ scan.error_message|default:"The target endpoint could not be reached." }}</p>
+</div>
+{% endif %}
+
+<div class="grid-2 mb-24">
+  <div class="glass-card padded" style="text-align:center;">
+    <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted);">Overall Security Score</h3>
+    <div class="score-ring-wrap mt-16" style="background: conic-gradient(
+        {% if scan.score_color == 'success' %}var(--success){% elif scan.score_color == 'info' %}var(--accent-cyan){% elif scan.score_color == 'warning' %}var(--medium){% else %}var(--danger){% endif %} {{ scan.security_score }}%,
+        var(--bg-glass) {{ scan.security_score }}%
+      ); border-radius:50%;">
+      <div class="score-ring-value" style="background:var(--bg-primary); border-radius:50%; inset:10px;">
+        <span class="num">{{ scan.security_score }}</span>
+        <span class="grade">/ 100</span>
+      </div>
+    </div>
+    <div class="mt-16" style="font-size:20px;">
+      {{ scan.risk_emoji }} <span style="font-weight:700;">{{ scan.get_risk_level_display }} Risk</span>
+    </div>
+  </div>
+
+  <div class="glass-card padded">
+    <h3 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:20px;">Summary</h3>
+    <div class="flex-col gap-12">
+      <div class="flex-between"><span class="badge badge-success">✔ Passed</span><span style="font-weight:700;">{{ scan.passed_count }}</span></div>
+      <div class="flex-between"><span class="badge badge-critical">✘ Failed</span><span style="font-weight:700;">{{ scan.failed_count }}</span></div>
+      <hr class="divider" style="margin:8px 0;">
+      <div class="flex-between"><span class="text-secondary" style="font-size:14px;">Jailbreak Score</span><span style="font-weight:700;">{{ scan.jailbreak_score }}/100</span></div>
+      <div class="flex-between"><span class="text-secondary" style="font-size:14px;">Avg. response time</span><span style="font-weight:700;">{{ scan.avg_response_time_ms }} ms</span></div>
+      <div class="flex-between"><span class="text-secondary" style="font-size:14px;">Error rate</span><span style="font-weight:700;">{{ scan.error_rate_pct }}%</span></div>
+    </div>
+  </div>
+</div>
+
+{% if scan.recommendations %}
+<div class="glass-card padded mb-24">
+  <h3 style="font-size:15px; margin-bottom:16px;">Recommendations</h3>
+  <div class="flex-col gap-12">
+    {% for tip in scan.recommendations %}
+    <div class="flex gap-12" style="align-items:flex-start;">
+      <span>💡</span>
+      <p style="font-size:14.5px; line-height:1.6; margin:0;">{{ tip }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<h2 style="font-size:20px; margin-bottom:16px;">Test results</h2>
+
+{% if failed_results %}
+<h3 class="mb-16" style="font-size:15px; color:var(--danger);">❌ Failed tests ({{ failed_results|length }})</h3>
+<div class="flex-col gap-16 mb-24">
+  {% for result in failed_results %}
+  <div class="glass-card padded" data-accordion>
+    <div class="flex-between" data-accordion-toggle style="cursor:pointer;">
+      <div class="flex gap-12" style="align-items:center;">
+        <span>{{ result.category_icon }}</span>
+        <div>
+          <div style="font-weight:600; font-size:15px;">{{ result.test_name }}</div>
+          <div class="text-muted" style="font-size:12.5px; margin-top:2px;">{{ result.get_category_display }}</div>
+        </div>
+      </div>
+      <span class="badge badge-critical">Failed</span>
+    </div>
+    <div data-accordion-panel style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
+      <hr class="divider">
+      <div class="mb-12">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Prompt sent</div>
+        <pre class="mono glass-card padded" style="font-size:13px; overflow-x:auto; white-space:pre-wrap;">{{ result.prompt_sent }}</pre>
+      </div>
+      <div class="mb-12">
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Response (excerpt)</div>
+        <pre class="mono glass-card padded" style="font-size:13px; overflow-x:auto; white-space:pre-wrap;">{{ result.response_snippet }}</pre>
+      </div>
+      <div>
+        <div class="text-muted mb-8" style="font-size:12.5px; font-weight:600; text-transform:uppercase;">Why this failed</div>
+        <p style="font-size:14.5px; line-height:1.6;">{{ result.detail }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if passed_results %}
+<h3 class="mb-16" style="font-size:15px; color:var(--success);">✔ Passed tests ({{ passed_results|length }})</h3>
+<div class="flex-col gap-8">
+  {% for result in passed_results %}
+  <div class="glass-card padded flex-between">
+    <div class="flex gap-12" style="align-items:center;">
+      <span>{{ result.category_icon }}</span>
+      <div>
+        <div style="font-weight:600; font-size:14.5px;">{{ result.test_name }}</div>
+        <div class="text-muted" style="font-size:12px; margin-top:2px;">{{ result.get_category_display }}{% if result.response_time_ms %} · {{ result.response_time_ms }}ms{% endif %}</div>
+      </div>
+    </div>
+    <span class="badge badge-success">Passed</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script>
+document.querySelectorAll('[data-accordion-toggle]').forEach(toggle => {
+  toggle.addEventListener('click', () => {
+    const panel = toggle.parentElement.querySelector('[data-accordion-panel]');
+    if (!panel) return;
+    panel.style.maxHeight = panel.style.maxHeight && panel.style.maxHeight !== '0px' ? '0' : panel.scrollHeight + 'px';
+  });
+});
+</script>
+{% endblock %}
