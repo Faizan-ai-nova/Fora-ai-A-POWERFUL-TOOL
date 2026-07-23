@@ -50,8 +50,19 @@ def build_headers(auth_header: str = '', api_key: str = '', bearer_token: str = 
     keys): auth_header (legacy single field) -> bearer_token -> api_key ->
     custom_headers (most specific, always wins).
     Never logs any of these values - callers must not either.
+
+    Sends a realistic browser-style User-Agent/Accept pair rather than the
+    default `python-requests/x.x` UA - several CDNs/WAFs (Cloudflare etc.)
+    return an HTML bot-check challenge instead of the real API response when
+    they see the default requests UA, which otherwise looks identical to a
+    target simply "not being an AI endpoint".
     """
-    headers = {'Content-Type': 'application/json'}
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    }
     if auth_header:
         headers['Authorization'] = auth_header
     if bearer_token:
