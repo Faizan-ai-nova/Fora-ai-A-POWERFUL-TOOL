@@ -7,6 +7,9 @@
     <h1 style="font-size: 26px; margin-top:8px;">{{ scan.target_name }}</h1>
     <p class="text-secondary mt-8 mono" style="font-size:13px;">{{ scan.target_url }}</p>
     <p class="text-muted mt-8" style="font-size:12.5px;">Scanned {{ scan.created_at|date:"M d, Y H:i" }}</p>
+    {% if scan.status == 'completed' %}
+    <p class="text-muted mt-8" style="font-size:12.5px;">Detected endpoint type: <strong>{{ scan.get_target_format_display }}</strong></p>
+    {% endif %}
   </div>
   <div class="flex gap-8">
     <form method="post" action="{% url 'ai_scanner:rerun_scan' scan.id %}">
