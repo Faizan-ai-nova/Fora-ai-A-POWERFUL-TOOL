@@ -16,8 +16,14 @@ class NewAIScanForm(forms.Form):
         # a browser-rendered chat widget, so offering "website" as a target
         # type overpromises. Keep the model choice (existing rows may still
         # have it) but stop offering it on new scans.
-        choices=[c for c in AIScan.TargetType.choices if c[0] != AIScan.TargetType.WEBSITE],
-        required=False, initial=AIScan.TargetType.AUTO,
+        # Read choices straight off the model field rather than a nested
+        # AIScan.TargetType class, so this doesn't break if that class isn't
+        # present/named differently on the deployed models.py.
+        choices=[
+            c for c in AIScan._meta.get_field('target_type').choices
+            if c[0] != 'website'
+        ],
+        required=False, initial='auto',
         widget=forms.Select(attrs={'class': 'form-input'})
     )
     target_url = forms.URLField(
