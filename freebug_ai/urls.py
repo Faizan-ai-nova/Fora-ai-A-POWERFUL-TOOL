@@ -17,6 +17,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('scanner/', include('scanner.urls')),
+    path('ai-scanner/', include('ai_scanner.urls')),
     path('subscriptions/', include('subscriptions.urls')),
     path('payments/', include('payments.urls')),
     path('reports/', include('reports.urls')),
@@ -27,7 +28,6 @@ urlpatterns = [
     path('', include('pages.urls')),
     path('robots.txt', robots_txt, name='robots_txt'),
     path('sitemap.xml', sitemap_xml, name='sitemap_xml'),
-    path('integrations/', include('integrations.urls')),
     path('ads.txt', ads_txt),
 ]
 
