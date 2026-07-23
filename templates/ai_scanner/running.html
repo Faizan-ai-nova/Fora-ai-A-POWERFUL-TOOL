@@ -26,7 +26,7 @@
     </div>
     <div class="flex-between mt-8">
       <span class="text-muted" style="font-size:12px;" data-progress-label>Step 0 / {{ test_count|add:1 }}</span>
-      <span class="text-muted" style="font-size:12px;" data-progress-pct>0%</span>
+      <span class="text-muted" style="font-size:12px;" data-progress-pct> · 0%</span>
     </div>
 
     <div class="mono mt-24" data-log-console
@@ -56,6 +56,7 @@
   const pctEl = document.querySelector('[data-progress-pct]');
   const stepLabelEl = document.querySelector('[data-progress-label]');
   const headlineEl = document.querySelector('[data-live-headline]');
+  const spinnerEl = document.querySelector('[data-live-spinner]');
 
   const totalSteps = {{ test_count|add:1 }};
   let lastLabel = '';
@@ -89,7 +90,7 @@
   function setProgress(step, total, label) {
     const pct = total ? Math.min(100, Math.round((step / total) * 100)) : 0;
     if (barEl) barEl.style.width = pct + '%';
-    if (pctEl) pctEl.textContent = pct + '%';
+    if (pctEl) pctEl.textContent = ' · ' + pct + '%';
     if (stepLabelEl) stepLabelEl.textContent = `Step ${step} / ${total}`;
     if (headlineEl && label) headlineEl.textContent = label;
     if (label) addLine(label);
@@ -146,13 +147,20 @@
         setProgress(totalSteps, totalSteps, '✅ Scan complete — building your report');
         setTimeout(() => { window.location.href = data.redirect_url; }, 500);
       } else {
+        if (spinnerEl) spinnerEl.style.display = 'none';
+        if (barEl) barEl.style.background = 'var(--danger)';
         if (headlineEl) headlineEl.textContent = '⚠️ ' + (data.error || 'The scan could not complete.');
         addLine('⚠️ ' + (data.error || 'The scan could not complete.'));
+        if (data.redirect_url) {
+          addLine('Redirecting to the scan report…');
+          setTimeout(() => { window.location.href = data.redirect_url; }, 2500);
+        }
       }
     })
     .catch(() => {
       polling = false;
       clearInterval(simTimer);
+      if (spinnerEl) spinnerEl.style.display = 'none';
       if (headlineEl) headlineEl.textContent = '⚠️ Connection lost — please refresh to check status.';
     });
 })();
